@@ -16,34 +16,33 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); max-width: 480px; margin: 0 auto; min-height: 100vh; }
 
-/* Header */
 .hdr { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--hdr); background: var(--primary); color: #fff; display: flex; align-items: center; padding: 0 16px; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
 .hdr h1 { font-size: 18px; font-weight: 800; }
 .hdr-date { font-size: 13px; opacity: .85; margin-left: auto; }
 
-/* Content */
 .content { padding-top: calc(var(--hdr) + 12px); padding-bottom: calc(var(--nav) + 12px); padding-inline: 12px; }
 .pane { display: none; } .pane.on { display: block; }
 
-/* Bottom nav */
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--nav); background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,.08); }
 .nb { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 10px; font-weight: 700; padding: 8px 4px; }
 .nb.on { color: var(--primary); } .nb svg { width: 22px; height: 22px; }
 
-/* Cards */
 .card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
 .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 12px; }
 
-/* Progress */
 .track { background: var(--border); border-radius: 99px; height: 10px; overflow: hidden; margin: 6px 0; }
 .fill { height: 100%; border-radius: 99px; background: var(--primary); transition: width .3s; }
 .fill.over { background: var(--danger); }
 
 /* Water */
-.water-num { font-size: 48px; font-weight: 900; color: var(--primary); line-height: 1; text-align: center; }
-.water-sub { font-size: 13px; color: var(--muted); text-align: center; margin-top: 2px; }
-.water-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
-.wbtn { background: var(--primary-light); color: var(--primary-dark); border: none; border-radius: 99px; padding: 9px 18px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.water-display { text-align: center; margin: 8px 0; }
+.water-l { font-size: 48px; font-weight: 900; color: var(--primary); line-height: 1; }
+.water-oz-label { font-size: 16px; color: var(--muted); font-weight: 500; }
+.water-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.water-btns { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+.wbtn { background: var(--primary-light); color: var(--primary-dark); border: none; border-radius: 12px; padding: 12px 0; font-weight: 800; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.wbtn-l { font-size: 17px; }
+.wbtn-oz { font-size: 10px; color: var(--primary-dark); opacity: .7; }
 .undo-btn { background: none; border: none; font-size: 12px; color: var(--muted); text-decoration: underline; cursor: pointer; display: block; margin: 8px auto 0; }
 
 /* Checklist */
@@ -54,12 +53,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .ci-label { font-size: 14px; font-weight: 700; }
 .ci-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-/* Timer */
-.timer-big { font-size: 40px; font-weight: 900; color: var(--accent); text-align: center; font-variant-numeric: tabular-nums; }
-.timer-sub { font-size: 12px; color: var(--muted); text-align: center; }
-.tbtn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-.tbtn.go { background: var(--accent); color: #fff; }
-.tbtn.stop { background: #f3f4f6; color: var(--muted); }
+/* Reminders */
+.rem-section { margin-bottom: 14px; }
+.rem-section:last-child { margin-bottom: 0; }
+.rem-time { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1.5px solid var(--primary-light); }
+.rem-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.rem-row:last-child { border-bottom: none; }
+.rem-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; margin-top: 1px; }
+.rem-text { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.rem-sub { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+.rem-warn { background: var(--warn-bg); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; border: 1.5px solid var(--warn-border); }
+.rem-warn-text { font-size: 12px; color: #7a5c00; font-weight: 600; line-height: 1.4; }
 
 /* Macro rows */
 .mrow { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
@@ -83,7 +87,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
 .cbwrap { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
 .cbwrap input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
 
-/* Meal log list */
+/* Meal log */
 .me { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .me:last-child { border-bottom: none; }
 .me-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
@@ -145,7 +149,6 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
 .sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
 .sheet-title { font-size: 18px; font-weight: 900; margin-bottom: 16px; }
 
-/* Misc */
 .empty { text-align: center; padding: 24px; color: var(--muted); font-size: 14px; }
 .sec-head { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 14px 0 8px; }
 .flex-sb { display: flex; align-items: center; justify-content: space-between; }
@@ -160,21 +163,27 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
 
 <div class="content">
 
-<!-- DASHBOARD -->
+<!-- ── DASHBOARD ── -->
 <div class="pane on" id="pane-dash">
 
   <div class="card">
-    <div class="card-title">💧 Daily Water</div>
-    <div class="water-num" id="waterNum">0</div>
-    <div class="water-sub" id="waterSub">of 88 oz (2.6 L) · 0%</div>
+    <div class="card-title">💧 Daily Water — Target 3 L</div>
+    <div class="water-display">
+      <div><span class="water-l" id="waterL">0.0</span><span class="water-oz-label" id="waterOzInline"> L / 0 oz</span></div>
+      <div class="water-sub" id="waterSub">of 3.0 L (101 oz) · 0%</div>
+    </div>
     <div class="track"><div class="fill" id="waterBar" style="width:0%"></div></div>
     <div class="water-btns">
-      <button class="wbtn" onclick="addWater(8)">+8 oz</button>
-      <button class="wbtn" onclick="addWater(16)">+16 oz</button>
-      <button class="wbtn" onclick="addWater(24)">+24 oz</button>
-      <button class="wbtn" onclick="addWater(32)">+32 oz</button>
+      <button class="wbtn" onclick="addWater(400)">
+        <span class="wbtn-l">+0.4 L</span>
+        <span class="wbtn-oz">~14 oz</span>
+      </button>
+      <button class="wbtn" onclick="addWater(700)">
+        <span class="wbtn-l">+0.7 L</span>
+        <span class="wbtn-oz">~24 oz</span>
+      </button>
     </div>
-    <button class="undo-btn" onclick="addWater(-8)">undo last</button>
+    <button class="undo-btn" id="undoBtn" onclick="undoWater()" style="display:none">undo last</button>
   </div>
 
   <div class="card">
@@ -183,34 +192,93 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
       <div class="ci-circle" id="ck-lemon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
       <div><div class="ci-label">🍋 Lemon water first thing</div><div class="ci-sub">2 Tbsp lemon juice · citrate for kidney stones</div></div>
     </div>
+    <div class="ci" onclick="toggleCheck('vyvanse')">
+      <div class="ci-circle" id="ck-vyvanse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">💊 Vyvanse + Vit D3 + Fish oil</div><div class="ci-sub">Take immediately on waking, with smoothie</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('smoothie')">
+      <div class="ci-circle" id="ck-smoothie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">🥤 Morning smoothie (25g+ protein)</div><div class="ci-sub">Blunts Vyvanse blood sugar instability</div></div>
+    </div>
     <div class="ci" onclick="toggleCheck('ferm')">
       <div class="ci-circle" id="ck-ferm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div><div class="ci-label">🥛 Fermented food</div><div class="ci-sub">Yogurt · kefir · kimchi · sauerkraut · miso</div></div>
-    </div>
-    <div class="ci" onclick="toggleCheck('protein')">
-      <div class="ci-circle" id="ck-protein"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div><div class="ci-label">🥚 Breakfast protein (25g+)</div><div class="ci-sub">Don't skip — Adderall suppresses appetite</div></div>
+      <div><div class="ci-label">🥛 Fermented food (add cold)</div><div class="ci-sub">Yogurt · kimchi · sauerkraut · kefir — never heat</div></div>
     </div>
     <div class="ci" onclick="toggleCheck('order')">
       <div class="ci-circle" id="ck-order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div><div class="ci-label">🥗 Veggies/protein before carbs</div><div class="ci-sub">At every meal · 20–30% lower post-meal glucose</div></div>
+      <div><div class="ci-label">🥗 Protein/veg before carbs</div><div class="ci-sub">At every meal · 20–30% lower post-meal glucose</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('remeron')">
+      <div class="ci-circle" id="ck-remeron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">💊 Remeron + Magnesium at 9–9:30 PM</div><div class="ci-sub">With a light protein snack · lights out by 10 PM</div></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">☕ Iron Meal → Coffee Timer</div>
-    <div id="t-idle">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">After eating beef, sardines, lentils, or chicken — wait 60 min before coffee or tea to protect iron absorption.</div>
-      <button class="tbtn go" onclick="startTimer()">Start 60-Min Timer</button>
+    <div class="card-title">📋 Reminders</div>
+
+    <div class="rem-section">
+      <div class="rem-time">☀️ Morning</div>
+      <div class="rem-row">
+        <div class="rem-icon">💊</div>
+        <div><div class="rem-text">Vyvanse before you blend, not after</div><div class="rem-sub">Earlier it peaks = earlier it clears = better sleep</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🫙</div>
+        <div><div class="rem-text">Vit D3 4,000 IU + Fish oil with smoothie</div><div class="rem-sub">Fat-soluble — the peanut butter/flax/chia fat in the smoothie is the ideal carrier</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">☕</div>
+        <div><div class="rem-text">Caffeine cap: 1 cup AM, nothing after noon</div><div class="rem-sub">Coffee after noon extends stimulant activity and compromises Remeron's sleep effect</div></div>
+      </div>
     </div>
-    <div id="t-run" style="display:none">
-      <div class="timer-big" id="tCountdown">60:00</div>
-      <div class="timer-sub">until coffee / tea is safe</div>
-      <button class="tbtn stop" onclick="stopTimer()">Cancel</button>
+
+    <div class="rem-section">
+      <div class="rem-time">🥩 Iron-Rich Meals (beef, lentils, salmon, chicken)</div>
+      <div class="rem-row">
+        <div class="rem-icon">☕</div>
+        <div><div class="rem-text">No coffee or tea for 60 min after</div><div class="rem-sub">Polyphenols reduce non-heme iron absorption by up to 90%</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🍋</div>
+        <div><div class="rem-text">Add lemon juice at the same meal</div><div class="rem-sub">Vitamin C forms a soluble iron chelate — dramatically boosts non-heme absorption</div></div>
+      </div>
     </div>
-    <div id="t-done" style="display:none">
-      <div class="alert alert-i">✅ 60 minutes up — coffee and tea are safe now.</div>
-      <button class="tbtn stop" onclick="resetTimer()">Reset</button>
+
+    <div class="rem-section">
+      <div class="rem-time">🌞 Midday</div>
+      <div class="rem-row">
+        <div class="rem-icon">🚶</div>
+        <div><div class="rem-text">5 min outdoor light + walk after lunch</div><div class="rem-sub">Resets afternoon cortisol peak, lowers post-lunch glucose</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">💧</div>
+        <div><div class="rem-text">Hit 2 of 3 L before 4 PM</div><div class="rem-sub">Mild dehydration reduces energy and cognitive performance during RN shifts</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">🌙 Evening</div>
+      <div class="rem-row">
+        <div class="rem-icon">🍽️</div>
+        <div><div class="rem-text">Use Remeron's evening hunger for protein</div><div class="rem-sub">Greek yogurt + walnuts, cottage cheese, banana + PB — not chips or refined carbs</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🛌</div>
+        <div><div class="rem-text">Lights out by 10 PM after 9:30 PM dose</div><div class="rem-sub">Remeron works best on a consistent sleep schedule — variable timing fragments sleep architecture</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">⚠️ Always</div>
+      <div class="rem-row">
+        <div class="rem-icon">🥬</div>
+        <div><div class="rem-text">Never heat fermented food</div><div class="rem-sub">Add kimchi and sauerkraut cold — heat kills live cultures</div></div>
+      </div>
+      <div class="rem-warn">
+        <div style="font-size:18px">⛔</div>
+        <div class="rem-warn-text">Ashwagandha is on hold — do not take until your prescriber specifically clears it. Raises serotonin activity + additive sedation with Remeron = interaction risk.</div>
+      </div>
     </div>
   </div>
 
@@ -221,7 +289,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
 
 </div>
 
-<!-- MEAL LOG -->
+<!-- ── MEAL LOG ── -->
 <div class="pane" id="pane-log">
 
   <div class="alert alert-w" id="oxAlert" style="display:none">⚠️ Oxalate-rich foods logged without a calcium source. Pair with yogurt, cheese, or milk.</div>
@@ -253,7 +321,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
       <div class="fg"><label class="fl">Sodium (mg)</label><input type="number" id="mSod" placeholder="0" min="0"></div>
       <div class="fg"><label class="fl">Calories</label><input type="number" id="mKcal" placeholder="0" min="0"></div>
     </div>
-    <div class="fg"><label class="cbwrap"><input type="checkbox" id="mIron"> Iron-rich meal (beef, sardines, lentils, chicken thighs)</label></div>
+    <div class="fg"><label class="cbwrap"><input type="checkbox" id="mIron"> Iron-rich meal (beef, lentils, salmon, chicken)</label></div>
     <div class="fg"><label class="cbwrap"><input type="checkbox" id="mOx" onchange="toggleCaPair()"> Contains oxalate-rich foods (spinach, almonds, beets, berries)</label></div>
     <div class="fg" id="caPairGrp" style="display:none"><label class="cbwrap"><input type="checkbox" id="mCa"> Paired with calcium source (yogurt, cheese, milk)</label></div>
     <button class="btn btn-p btn-full" onclick="logManual()">Log Meal</button>
@@ -274,7 +342,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
 
 </div>
 
-<!-- PLANTS -->
+<!-- ── PLANTS ── -->
 <div class="pane" id="pane-plants">
   <div class="card">
     <div class="card-title">🌱 This Week's Plant Foods</div>
@@ -285,12 +353,15 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
       </div>
       <div id="weekLabel" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
     </div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
+      Your daily smoothie base alone counts 4–8 plants. Spices count as ¼ plant each (4 spices = 1).
+    </div>
   </div>
 
   <div class="card">
     <div class="card-title">➕ Add a Plant Food</div>
     <div style="display:flex;gap:8px">
-      <input type="text" id="plantIn" placeholder="e.g. blueberries, oats, garlic…" onkeydown="if(event.key==='Enter')addPlant()" style="flex:1">
+      <input type="text" id="plantIn" placeholder="e.g. blueberries, oats, turmeric…" onkeydown="if(event.key==='Enter')addPlant()" style="flex:1">
       <button class="btn btn-p" onclick="addPlant()">Add</button>
     </div>
     <div class="sec-head">Quick Add</div>
@@ -303,7 +374,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
   </div>
 </div>
 
-<!-- BIOMARKERS -->
+<!-- ── BIOMARKERS ── -->
 <div class="pane" id="pane-labs">
   <div class="card">
     <div class="card-title">➕ Log Lab Result</div>
@@ -316,6 +387,7 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
           <option value="ldl">LDL (mg/dL)</option>
           <option value="sbp">Systolic BP (mmHg)</option>
           <option value="dbp">Diastolic BP (mmHg)</option>
+          <option value="ferritin">Ferritin (ng/mL)</option>
         </select>
       </div>
       <div class="fg"><label class="fl">Value</label><input type="number" id="bmVal" step="0.1" placeholder="e.g. 5.7"></div>
@@ -326,137 +398,175 @@ input:focus, select:focus { outline: none; border-color: var(--primary); }
   <div id="bmCards"></div>
 </div>
 
-<!-- MEAL PLAN -->
+<!-- ── MEAL PLAN ── -->
 <div class="pane" id="pane-plan">
   <div class="daytabs" id="dayTabs"></div>
   <div id="planCards"></div>
-  <button class="btn btn-o btn-full" style="margin-top:4px" onclick="showGrocery()">🛒 View Grocery List</button>
+  <button class="btn btn-o btn-full" style="margin-top:4px" onclick="showGrocery()">🛒 View Costco Grocery List</button>
 </div>
 
-</div><!-- /content -->
+</div>
 
 <nav class="nav">
   <button class="nb on" id="nb-dash" onclick="go('dash')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Today
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Today
   </button>
   <button class="nb" id="nb-log" onclick="go('log')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-    Meals
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Meals
   </button>
   <button class="nb" id="nb-plants" onclick="go('plants')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12"/><path d="M12 12C12 12 7 9 7 4a5 5 0 0 1 10 0c0 5-5 8-5 8z"/><path d="M12 12c0 0-3 3.5-3 7"/></svg>
-    Plants
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12"/><path d="M12 12C12 12 7 9 7 4a5 5 0 0 1 10 0c0 5-5 8-5 8z"/><path d="M12 12c0 0-3 3.5-3 7"/></svg>Plants
   </button>
   <button class="nb" id="nb-labs" onclick="go('labs')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Labs
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Labs
   </button>
   <button class="nb" id="nb-plan" onclick="go('plan')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-    Plan
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>Plan
   </button>
 </nav>
 
-<!-- Grocery modal -->
 <div class="overlay" id="groceryModal" style="display:none" onclick="if(event.target===this)closeGrocery()">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">🛒 Weekly Grocery List</div>
+    <div class="sheet-title">🛒 Costco Grocery List</div>
     <div id="groceryBody"></div>
     <button class="btn btn-p btn-full" style="margin-top:16px" onclick="closeGrocery()">Done</button>
   </div>
 </div>
 
 <script>
-// ── DATA ────────────────────────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────────────────────────
 
 const PLAN = {
   Monday: {
-    breakfast: { name:"Greek Yogurt Power Bowl", kcal:480, p:32, c:52, f:14, fi:8, iron:false, ferm:true, prep:"Layer 1 cup plain whole-milk Greek yogurt in a bowl. Top with ½ cup mixed berries, 2 Tbsp ground flaxseed, ¼ cup walnuts, and 1 Tbsp honey. Done in 2 minutes." },
-    lunch: { name:"Sardine + White Bean Bowl", kcal:520, p:38, c:44, f:16, fi:12, iron:true, ferm:false, prep:"Combine 1 cup canned white beans (rinsed), ½ cup cherry tomatoes, ½ cup diced cucumber. Flake 1 can sardines over the top. Drizzle with lemon juice and reserved sardine oil." },
-    dinner: { name:"Sheet Pan Salmon + Sweet Potato + Broccoli", kcal:640, p:46, c:52, f:20, fi:9, iron:false, ferm:false, prep:"425°F. Toss cubed sweet potato in olive oil, roast 15 min. Push aside, add broccoli and 6 oz salmon. Roast 12–14 more minutes." },
+    breakfast: { name:"Energy Smoothie: Blueberry + Cinnamon", kcal:540, p:36, c:62, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop Costco chocolate protein powder · 2 Tbsp flaxseed meal · 1 Tbsp chia seeds · ⅓ cup sprouted rolled oats · 2 Tbsp Ted's peanut butter · ½ cup frozen blueberries · ½ tsp cinnamon. Blend 60 sec. Take Vyvanse + Vitamin D3 4,000 IU + fish oil with first sip." },
+    lunch: { name:"Kirkland Organic Chicken Rice Bowl", kcal:580, p:45, c:58, f:16, fi:9, iron:false, ferm:false,
+      prep:"Microwave Kirkland brown rice pouch and 1 cup frozen broccoli (3 min each). Pull 5 oz Kirkland organic chicken. Bowl with rice, broccoli, chicken, 3 Tbsp hummus, juice of ½ lemon, drizzle EVOO. 5 minutes." },
+    dinner: { name:"Sheet-Pan Salmon + Broccoli + Brown Rice", kcal:620, p:48, c:52, f:20, fi:8, iron:false, ferm:false,
+      prep:"425°F. Sheet pan: 6 oz Costco salmon + 1.5 cups frozen broccoli, drizzle Kirkland EVOO, garlic powder, sea salt, black pepper. Roast 18 min. Serve over ¾ cup Kirkland brown rice." },
     snacks: [
-      { name:"Apple + Peanut Butter", kcal:280, p:8, c:34, f:14, fi:5, iron:false, ferm:false },
-      { name:"Kefir", kcal:140, p:10, c:12, f:3, fi:0, iron:false, ferm:true }
+      { name:"Kirkland Greek Yogurt + Frozen Berries + Walnuts", kcal:280, p:18, c:22, f:14, fi:4, iron:false, ferm:true },
+      { name:"Apple + Ted's Peanut Butter", kcal:270, p:8, c:36, f:14, fi:6, iron:false, ferm:false }
     ]
   },
   Tuesday: {
-    breakfast: { name:"Scrambled Eggs + Avocado Toast", kcal:500, p:28, c:38, f:24, fi:9, iron:false, ferm:false, prep:"Scramble 3 eggs in olive oil spray 3–4 min. Toast 2 slices whole grain bread. Top with ½ avocado sliced and eggs." },
-    lunch: { name:"Chicken + Lentil Soup", kcal:560, p:44, c:52, f:12, fi:14, iron:true, ferm:false, prep:"Simmer 1.5 cups low-sodium broth with diced carrots and celery 10 min. Add 1 cup canned lentils + 5 oz shredded rotisserie chicken. Heat 5 min. Season with cumin, salt, pepper. Pair with a small OJ." },
-    dinner: { name:"Grass-Fed Beef Stir-Fry + Brown Rice", kcal:660, p:46, c:62, f:18, fi:6, iron:true, ferm:false, prep:"High heat. Brown 5 oz beef 5–6 min. Remove, stir-fry bell peppers + snap peas 4 min. Return beef. Add 2 Tbsp low-sodium soy sauce + 1 tsp sesame oil. Serve over 1 cup brown rice." },
+    breakfast: { name:"Energy Smoothie: Frozen Mango + Turmeric", kcal:545, p:36, c:64, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · ½ cup frozen mango · pinch turmeric · pinch black pepper. Black pepper activates curcumin absorption — do not skip. Blend 60 sec." },
+    lunch: { name:"Lentil + Chickpea Bowl", kcal:560, p:28, c:72, f:14, fi:18, iron:true, ferm:false,
+      prep:"No cook. Combine: ½ cup Kirkland canned lentils (warmed) · ½ cup Kirkland canned chickpeas (rinsed) · ½ cup diced cucumber · ½ cup cherry tomatoes · 2 Tbsp tahini · juice of ½ lemon · sea salt · optional 1 oz feta (calcium pairs with lentil oxalate). The lemon is the vitamin C that boosts non-heme iron — do not skip." },
+    dinner: { name:"Ground Turkey Stir-Fry + Brown Rice", kcal:600, p:46, c:54, f:18, fi:8, iron:true, ferm:false,
+      prep:"Brown 5 oz Kirkland ground turkey over medium-high heat, 7–8 min. Add thawed Costco stir-fry veg mix. Add 2 Tbsp tamari + ½ tsp garlic powder + 1 tsp sesame seeds. Stir 2 min. Serve over ¾ cup Kirkland brown rice. One pan, 12 minutes." },
     snacks: [
-      { name:"Cottage Cheese + Pineapple", kcal:220, p:22, c:20, f:4, fi:1, iron:false, ferm:false }
+      { name:"Kirkland Cottage Cheese + Pineapple", kcal:190, p:20, c:18, f:4, fi:1, iron:false, ferm:false }
     ]
   },
   Wednesday: {
-    breakfast: { name:"Overnight Oats", kcal:480, p:24, c:60, f:14, fi:10, iron:false, ferm:true, prep:"Night before: ½ cup oats + ¾ cup kefir + 1 Tbsp chia seeds in a jar. Refrigerate. Morning: top with ½ cup blueberries, ¼ cup walnuts, 1 tsp honey." },
-    lunch: { name:"Tuna-Stuffed Bell Peppers", kcal:500, p:42, c:34, f:16, fi:7, iron:true, ferm:false, prep:"Mix 1 can tuna (drained), ½ cup cooked quinoa, 2 Tbsp Greek yogurt, ½ cup diced celery, lemon juice, S&P. Spoon into 2 halved bell peppers. No baking needed." },
-    dinner: { name:"One-Pot Chicken Thighs + Chickpeas + Tomatoes", kcal:640, p:52, c:48, f:18, fi:12, iron:true, ferm:false, prep:"Brown seasoned chicken 4 min per side in olive oil. Add 1 can chickpeas + 1 can diced tomatoes. Cover, simmer 25 min on medium-low." },
+    breakfast: { name:"Energy Smoothie: Frozen Strawberry + Ginger", kcal:535, p:36, c:60, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen strawberries · ¼ tsp ground ginger. Blend 60 sec." },
+    lunch: { name:"Canned Salmon Poke Bowl", kcal:580, p:42, c:52, f:18, fi:8, iron:true, ferm:false,
+      prep:"No-cook assembly. Bowl: ¾ cup Kirkland brown rice (microwave pouch) · 1 can Kirkland canned wild salmon (drained) · ½ avocado sliced · ½ cup sliced cucumber · 1 Tbsp tamari + 1 tsp sesame seeds + ½ tsp sesame oil. Optional: 1 Tbsp kimchi on the side (add cold)." },
+    dinner: { name:"Kirkland Organic Chicken + Sweet Potato + Spinach Salad", kcal:580, p:46, c:48, f:16, fi:9, iron:false, ferm:false,
+      prep:"Microwave 1 medium sweet potato 8 min (split and mash lightly). Pull 5 oz Kirkland organic chicken. Toss 2 cups baby spinach with ¼ cup walnuts + lemon juice + EVOO. Plate everything. 10 minutes. Walnuts alongside spinach provide calcium to pair with spinach oxalate." },
     snacks: [
-      { name:"Carrots + Hummus", kcal:200, p:6, c:24, f:8, fi:7, iron:false, ferm:false }
+      { name:"Kirkland Hummus + Baby Carrots", kcal:200, p:6, c:26, f:8, fi:7, iron:false, ferm:false },
+      { name:"Sauerkraut on the side of any meal", kcal:20, p:1, c:3, f:0, fi:1, iron:false, ferm:true }
     ]
   },
   Thursday: {
-    breakfast: { name:"Smoked Salmon + Egg Scramble", kcal:520, p:38, c:30, f:22, fi:4, iron:false, ferm:false, prep:"Scramble 3 eggs in olive oil 3 min. Plate on 2 slices whole grain toast. Add 2 oz smoked salmon + ¼ avocado." },
-    lunch: { name:"Black Bean + Brown Rice Bowl", kcal:540, p:26, c:74, f:12, fi:16, iron:true, ferm:false, prep:"Warm 1 cup brown rice + 1 cup black beans. Bowl with ½ cup corn, ½ cup low-sodium salsa, ¼ cup Greek yogurt, ¼ avocado." },
-    dinner: { name:"Baked Salmon + Quinoa + Asparagus", kcal:640, p:50, c:50, f:20, fi:9, iron:false, ferm:false, prep:"400°F. Salmon + asparagus on sheet pan, drizzle olive oil + lemon + garlic powder + salt. Bake 14–16 min. Serve over 1.5 cups cooked quinoa." },
+    breakfast: { name:"Energy Smoothie: Cocoa + Banana", kcal:560, p:37, c:66, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · 1 Tbsp unsweetened cocoa powder · ½ frozen banana · pinch cinnamon. Dark cocoa = concentrated polyphenol source for sebopsoriasis. Blend 60 sec." },
+    lunch: { name:"Kirkland Organic Chicken + Brown Rice + Sauerkraut", kcal:560, p:44, c:52, f:16, fi:7, iron:false, ferm:true,
+      prep:"Microwave ¾ cup Kirkland brown rice. Pull 5 oz Kirkland organic chicken. Assemble bowl with chicken, rice, drizzle EVOO + squeeze lemon + sea salt. Add ¼ cup sauerkraut cold on the side — do not heat it (kills probiotics). Fermented food check: done." },
+    dinner: { name:"Microwave Lentil Pouch + Brown Rice + Steamed Kale", kcal:520, p:28, c:72, f:10, fi:16, iron:true, ferm:false,
+      prep:"Microwave 1 Tasty Bite lentil pouch or 1 cup Kirkland canned lentils (warmed). Microwave ¾ cup brown rice. Microwave 1.5 cups Costco frozen kale 3 min. Combine in a bowl. Drizzle Kirkland EVOO + pinch turmeric + sea salt. 5 minutes flat." },
     snacks: [
-      { name:"Hard-Boiled Eggs + Orange", kcal:240, p:14, c:18, f:10, fi:3, iron:false, ferm:false }
+      { name:"Kirkland Greek Yogurt + Walnuts + Banana", kcal:320, p:18, c:32, f:14, fi:4, iron:false, ferm:true },
+      { name:"Costco Pre-Boiled Eggs (2)", kcal:140, p:12, c:1, f:10, fi:0, iron:false, ferm:false }
     ]
   },
   Friday: {
-    breakfast: { name:"Egg + Veggie Breakfast Burrito", kcal:500, p:30, c:46, f:18, fi:8, iron:false, ferm:false, prep:"Scramble 2 eggs with diced bell pepper in olive oil 3–4 min. Warm a whole wheat tortilla 20 sec. Fill with eggs, ¼ cup black beans, 2 Tbsp salsa, ¼ avocado." },
-    lunch: { name:"Greek Salad + Grilled Chicken", kcal:560, p:48, c:26, f:26, fi:6, iron:false, ferm:false, prep:"Combine romaine, cherry tomatoes, cucumber, Kalamata olives, 1.5 oz feta. Top with 5 oz sliced chicken. Dress with 2 Tbsp olive oil + red wine vinegar." },
-    dinner: { name:"Lentil + Sweet Potato Curry", kcal:600, p:28, c:80, f:14, fi:18, iron:true, ferm:false, prep:"Sauté cubed sweet potato 3 min in olive oil. Add 1 cup red lentils, 1 can coconut milk, 1 can diced tomatoes, curry powder, turmeric. Simmer 20–22 min. Squeeze lemon at serving." },
+    breakfast: { name:"Energy Smoothie: Frozen Cherries + Cinnamon", kcal:545, p:36, c:63, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen cherries · ½ tsp cinnamon. Cherries = concentrated anthocyanins, one of the strongest polyphenol classes for reducing inflammatory markers. Blend 60 sec." },
+    lunch: { name:"Canned Salmon + Chickpea + Olive + Tomato Bowl", kcal:570, p:40, c:44, f:20, fi:12, iron:true, ferm:false,
+      prep:"No cook. Combine: 1 can Kirkland canned wild salmon (drained) · ½ cup Kirkland canned chickpeas (rinsed) · ½ cup cherry tomatoes halved · 8 Kalamata olives chopped · 1.5 Tbsp Kirkland EVOO + juice of ½ lemon + sea salt. Two omega-3 sources (salmon + EVOO) + polyphenols from olives." },
+    dinner: { name:"Sheet-Pan Salmon + Brussels Sprouts + Quinoa", kcal:620, p:48, c:44, f:22, fi:9, iron:false, ferm:false,
+      prep:"425°F. Sheet pan: 6 oz Costco salmon + 1.5 cups Costco frozen Brussels sprouts, drizzle Kirkland EVOO + garlic powder + paprika + sea salt. Roast 18 min. Serve over ¾ cup cooked Kirkland quinoa. Second salmon of the week — covers omega-3 and Vitamin D." },
     snacks: [
-      { name:"Greek Yogurt + Honey + Pumpkin Seeds", kcal:250, p:18, c:22, f:8, fi:2, iron:false, ferm:true }
+      { name:"1 oz Dark Chocolate (85%+) + Kirkland Walnuts", kcal:280, p:5, c:14, f:22, fi:3, iron:false, ferm:false },
+      { name:"Kirkland Edamame (1 cup microwaved)", kcal:190, p:17, c:14, f:8, fi:8, iron:true, ferm:false }
     ]
   },
   Saturday: {
-    breakfast: { name:"Smashed Egg + Avocado Bowl", kcal:480, p:26, c:38, f:24, fi:9, iron:false, ferm:false, prep:"Cook 3 eggs in olive oil 3–4 min. Smash ½ avocado on 2 slices whole grain toast. Top with eggs, cherry tomatoes, salt, red pepper." },
-    lunch: { name:"Chicken Wrap + Tzatziki", kcal:540, p:44, c:44, f:16, fi:6, iron:false, ferm:true, prep:"Warm large whole wheat wrap 30 sec in dry pan. Layer 5 oz chicken breast, sliced cucumber, romaine, 3 Tbsp tzatziki, 4 Kalamata olives halved." },
-    dinner: { name:"Soy-Glazed Salmon Bowl", kcal:640, p:48, c:56, f:20, fi:8, iron:false, ferm:false, prep:"Mix 2 Tbsp low-sodium soy sauce + 1 tsp honey. Brush over salmon, bake 400°F 12–14 min. Heat edamame 2 min. Dress shredded cabbage with sesame oil + rice vinegar. Bowl: rice, cabbage, edamame, salmon." },
+    breakfast: { name:"Energy Smoothie: Banana + Spinach", kcal:545, p:36, c:65, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · 1 cup baby spinach · ½ frozen banana. Spinach is invisible in a chocolate smoothie. Note: spinach has oxalate — pair this breakfast with a small cup of Kirkland Greek yogurt on the side (calcium binds spinach oxalate)." },
+    lunch: { name:"Kirkland Organic Chicken + Frozen Veg + Brown Rice + Kimchi", kcal:570, p:44, c:52, f:16, fi:9, iron:false, ferm:true,
+      prep:"Microwave Kirkland brown rice pouch and Costco stir-fry veg mix (3 min each). Pull 5 oz Kirkland organic chicken. Assemble with 1 tsp EVOO + sea salt. Add ¼ cup kimchi cold on the side." },
+    dinner: { name:"Eggs + Black Beans + Peppers + Tortilla", kcal:590, p:36, c:56, f:24, fi:12, iron:false, ferm:false,
+      prep:"Scramble 3 Kirkland organic eggs with olive oil spray, 3–4 min. Warm ½ cup Kirkland black beans (microwave 90 sec) and ½ cup Costco frozen peppers (microwave 2 min). Assemble in 1 whole wheat tortilla with 2 Tbsp Kirkland salsa + ¼ avocado. 10 minutes, 6 ingredients." },
     snacks: [
-      { name:"Kimchi + Rice Cakes", kcal:120, p:3, c:22, f:1, fi:2, iron:false, ferm:true },
-      { name:"Pistachios", kcal:170, p:6, c:8, f:14, fi:3, iron:false, ferm:false }
+      { name:"Kirkland Greek Yogurt + Honey + Walnuts", kcal:280, p:18, c:22, f:14, fi:2, iron:false, ferm:true }
     ]
   },
   Sunday: {
-    breakfast: { name:"Veggie Omelet + Whole Grain Toast", kcal:500, p:34, c:36, f:22, fi:6, iron:false, ferm:false, prep:"Sauté diced bell pepper, onion, mushrooms in olive oil 3 min. Pour in 3 beaten eggs. Let set, fold. Top with shredded mozzarella. Serve with 2 slices whole grain toast." },
-    lunch: { name:"Sardine Toast + Arugula Salad", kcal:520, p:36, c:40, f:18, fi:7, iron:true, ferm:false, prep:"Spread Dijon on 2 slices whole grain sourdough, top with flaked sardines. Toss arugula + cherry tomatoes with olive oil + lemon. Top with Parmesan. Eat salad FIRST." },
-    dinner: { name:"Sheet Pan Chicken Thighs + Roasted Veg", kcal:640, p:52, c:50, f:20, fi:10, iron:true, ferm:false, prep:"425°F. Toss sweet potato, Brussels sprouts, red bell pepper with olive oil + seasonings. Add seasoned chicken thighs skin-up. Roast 30 min until chicken hits 165°F." },
+    breakfast: { name:"Energy Smoothie: Blueberries + Walnuts", kcal:550, p:37, c:62, f:20, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen blueberries · 1 oz Kirkland walnuts. Walnuts add plant-based ALA omega-3 + polyphenols alongside the flax and chia already in the base." },
+    lunch: { name:"Leftover Salmon + Brown Rice + Edamame + Ginger-Tamari", kcal:575, p:44, c:50, f:18, fi:9, iron:true, ferm:false,
+      prep:"Use leftover salmon from Friday/Saturday dinner or 1 can Kirkland canned wild salmon. Microwave Kirkland brown rice pouch and ½ cup Kirkland frozen edamame (2 min). Bowl with rice, salmon, edamame, ½ cup sliced cucumber. Dress with 1 Tbsp tamari + ¼ tsp ginger powder + ½ tsp sesame oil." },
+    dinner: { name:"Kirkland Organic Chicken Thighs + Brussels Sprouts + Sweet Potato", kcal:640, p:48, c:50, f:22, fi:10, iron:false, ferm:false,
+      prep:"425°F. Toss 1.5 cups Costco frozen Brussels sprouts + 1 medium sweet potato (cubed) with 1 Tbsp Kirkland EVOO + half the seasoning on a sheet pan. Season 2 Kirkland organic chicken thighs (bone-in) with remaining EVOO + 1 tsp garlic powder + 1 tsp paprika + sea salt, skin-side up. Roast 28–30 min until chicken hits 165°F." },
     snacks: [
-      { name:"Cottage Cheese + Sauerkraut", kcal:200, p:20, c:10, f:4, fi:2, iron:false, ferm:true }
+      { name:"Banana + Ted's Peanut Butter", kcal:200, p:6, c:30, f:8, fi:3, iron:false, ferm:false },
+      { name:"Kirkland Greek Yogurt + Frozen Berries", kcal:180, p:16, c:18, f:4, fi:3, iron:false, ferm:true }
     ]
   }
 };
 
 const GROCERY = {
-  "Produce": ["Mixed berries (fresh or frozen) — 2 lbs","Blueberries — 1 pint","Apples — 4","Bananas — 5","Oranges — 4","Lemons — 6 (squeeze daily)","Avocados — 4","Cherry tomatoes — 3 pints","Bell peppers (mixed) — 6","Broccoli — 1 large head","Asparagus — 1 bunch","Brussels sprouts — 12 oz bag","Baby carrots — 1 lb","Cucumber — 2","Celery — 1 bunch","Romaine or mixed greens — 2 bags","Arugula — 1 bag","Cabbage or coleslaw mix — 1 bag","Onion — 2 yellow","Garlic — 1 head","Mushrooms — 8 oz (UV-treated if available)","Sweet potatoes — 4","Corn (frozen) — 12 oz","Edamame (shelled, frozen) — 12 oz","Snap peas or green beans — 8 oz","Pineapple — 1 small or 1 can in juice"],
-  "Proteins": ["Wild salmon fillets — 4 × 6 oz","Smoked salmon — 4 oz","Canned sardines in olive oil — 3 cans","Canned chunk light tuna — 2 cans","Lean grass-fed ground beef — 6 oz","Chicken thighs (bone-in) — 6","Chicken breast / rotisserie — 1.5 lbs","Large eggs — 2 dozen"],
-  "Dairy & Fermented": ["Plain whole-milk Greek yogurt — 32 oz","Plain low-fat kefir — 32 oz","Low-fat cottage cheese — 24 oz","Feta cheese — 4 oz","Mozzarella or Swiss — 4 oz shredded","Parmesan — 2 oz wedge","Sauerkraut (unpasteurized, refrigerated) — 1 jar","Kimchi (refrigerated, unpasteurized) — 1 jar"],
-  "Grains & Legumes": ["Old-fashioned rolled oats — 42 oz","Brown rice — 2 lbs","Quinoa — 1 lb","Black beans (no-salt) — 3 cans","White beans (no-salt) — 2 cans","Chickpeas (no-salt) — 2 cans","Red lentils (dry) — 1 lb + 1 can green lentils","Diced tomatoes (no-salt) — 3 cans","Light coconut milk — 1 can","Low-sodium chicken broth — 32 oz","Low-sodium soy sauce — 1 bottle","Whole grain bread — 1 loaf","Whole wheat tortillas (8-inch) — 1 pack","Large whole wheat wraps — 1 pack","Whole grain sourdough — 1 loaf","Plain rice cakes — 1 bag","Low-sodium salsa — 1 jar","Hummus — 10 oz","Tzatziki — 1 small container","Dijon mustard — 1 jar","Apple cider vinegar — 1 bottle"],
-  "Nuts, Seeds & Oils": ["Walnuts — 8 oz","Pistachios (shelled) — 4 oz","Natural peanut butter — 1 jar","Chia seeds — 8 oz","Ground flaxseed — 12 oz","Pumpkin seeds — 4 oz","Extra-virgin olive oil — 16 oz+","Sesame oil — small bottle","Rice vinegar — small bottle"],
-  "Spices & Pantry": ["Garlic powder","Smoked paprika","Cumin","Curry powder","Turmeric","Italian seasoning","Red pepper flakes","Kalamata olives — 1 jar","Honey — 1 small jar"]
+  "Produce": [
+    "Bananas — Costco fresh bunch (prebiotic, potassium, evening snack)","Apples — Costco 3-lb bag","Avocados — Costco bag of 5","Lemons — Costco 5-lb bag (squeeze daily into water for kidney stones)","Cucumbers — Costco 4-pack","Cherry tomatoes — Costco 2-pint container","Sweet potatoes — Costco 5-lb bag","Garlic — Costco 3-head pack","Ginger — fresh knob or ground","Costco fresh baby spinach — 5 oz container",
+    "Costco frozen berry blend (blueberries + strawberries + cherries) — smoothie add-ins","Costco frozen mango chunks","Costco frozen broccoli — 2 lb bag","Costco frozen stir-fry vegetable mix","Costco frozen Brussels sprouts — 1.5 lb bag","Costco frozen kale or spinach","Costco frozen pepper strips","Bell peppers or Costco frozen pepper strips"
+  ],
+  "Proteins": [
+    "Costco fresh salmon filet — large piece, portion into 6 oz and freeze","Kirkland organic chicken thighs (bone-in, frozen bag)","Kirkland organic chicken breast — 1.5 lbs","Kirkland ground turkey — 1 lb","Kirkland canned wild salmon — 6-pack","Kirkland canned albacore tuna in water — 6-pack","Costco pre-boiled eggs — 2 dozen pack","Kirkland organic large eggs — 2 dozen pack"
+  ],
+  "Dairy & Fermented": [
+    "Kirkland plain Greek yogurt 2% — 48 oz container","Kirkland cottage cheese — 24 oz container","Sauerkraut — refrigerated unpasteurized (NOT shelf-stable canned — no live cultures)","Kimchi — refrigerated unpasteurized (refrigerated Korean-brand if Costco is out)","Kirkland Parmesan wedge — optional, for salads"
+  ],
+  "Grains, Legumes & Pantry": [
+    "Kirkland organic brown rice — 25 lb bag OR Costco brown rice microwave pouches (90-sec)","Kirkland organic quinoa","Kirkland organic sprouted rolled oats — already on hand","Kirkland organic chickpeas (canned) — 4-pack","Kirkland organic black beans (canned) — 4-pack","Kirkland canned lentils OR Tasty Bite lentil microwave pouches — 90-sec shortcut","Kirkland organic hummus — tub","Tahini — Artisana or any Costco brand","Tamari or low-sodium soy sauce — Kirkland or San-J","Whole wheat flour tortillas 8-inch — Costco pack","Kirkland organic salsa — jar","Kalamata olives — jar"
+  ],
+  "Nuts, Seeds & Oils": [
+    "Kirkland organic EVOO — 2 L tin (used on nearly every meal — buy the large tin)","Kirkland walnuts — 1 lb bag","Kirkland pistachios — 1 lb bag shelled","Kirkland almonds — 1 lb bag (use in moderation — oxalate; favor walnuts and pistachios)","Ted's peanut butter — already on hand","Kirkland chia seeds — already on hand","Flaxseed meal — already on hand (keep refrigerated after opening)","Sesame seeds — small bag","Dark chocolate 85%+ — for evening anti-inflammatory snack"
+  ],
+  "Plant Milks": [
+    "Kirkland organic oat milk — 6-pack of 32 oz cartons","Kirkland unsweetened almond milk — 6-pack of 32 oz cartons"
+  ],
+  "Spices & Condiments": [
+    "Turmeric","Cinnamon","Black pepper (grinder or ground)","Garlic powder","Paprika (smoked or standard)","Ground ginger","Sea salt","Dijon mustard","Unsweetened cocoa powder"
+  ],
+  "Beverages & Protein": [
+    "Green tea bags — Kirkland or Costco brand (afternoon caffeine alternative, polyphenol source)","Sparkling water — Kirkland or Aha","Costco chocolate protein powder — continue current supply"
+  ]
 };
 
 const BM_CFG = {
-  a1c:  { label:'A1C',         unit:'%',     target:'< 5.7%',    recheck:3, good:v=>v<5.7,   warn:v=>v<6.4 },
-  vitd: { label:'Vitamin D',   unit:'ng/mL', target:'≥ 30',      recheck:3, good:v=>v>=30,   warn:v=>v>=20 },
-  hgb:  { label:'Hemoglobin',  unit:'g/dL',  target:'14.0–17.3', recheck:6, good:v=>v>=14&&v<=17.3, warn:v=>v>=13 },
-  ldl:  { label:'LDL',         unit:'mg/dL', target:'< 100',     recheck:6, good:v=>v<100,   warn:v=>v<130 },
-  sbp:  { label:'Systolic BP', unit:'mmHg',  target:'< 120',     recheck:6, good:v=>v<120,   warn:v=>v<130 },
-  dbp:  { label:'Diastolic BP',unit:'mmHg',  target:'< 80',      recheck:6, good:v=>v<80,    warn:v=>v<90  }
+  a1c:     { label:'A1C',          unit:'%',     target:'< 5.7%',    recheck:3, good:v=>v<5.7,   warn:v=>v<6.4  },
+  vitd:    { label:'Vitamin D',    unit:'ng/mL', target:'≥ 30',      recheck:3, good:v=>v>=30,   warn:v=>v>=20  },
+  hgb:     { label:'Hemoglobin',   unit:'g/dL',  target:'14.0–17.3', recheck:6, good:v=>v>=14&&v<=17.3, warn:v=>v>=13 },
+  ldl:     { label:'LDL',          unit:'mg/dL', target:'< 100',     recheck:6, good:v=>v<100,   warn:v=>v<130  },
+  sbp:     { label:'Systolic BP',  unit:'mmHg',  target:'< 120',     recheck:6, good:v=>v<120,   warn:v=>v<130  },
+  dbp:     { label:'Diastolic BP', unit:'mmHg',  target:'< 80',      recheck:6, good:v=>v<80,    warn:v=>v<90   },
+  ferritin:{ label:'Ferritin',     unit:'ng/mL', target:'≥ 30',      recheck:6, good:v=>v>=30,   warn:v=>v>=15  }
 };
 
-const QP = ["Blueberries","Mixed berries","Oats","Broccoli","Spinach","Kale","Bell peppers","Avocado","Banana","Apple","Sweet potato","Garlic","Onion","Lemon","Chickpeas","Lentils","Black beans","Walnuts","Flaxseed","Chia seeds","Pumpkin seeds","Olive oil","Tomatoes","Cucumber","Arugula","Edamame","Brown rice","Quinoa","Asparagus","Brussels sprouts","Mushrooms","Carrots","Kimchi","Sauerkraut","Turmeric","Ginger","Cumin","Paprika"];
+const QP = ["Blueberries","Mixed berries","Frozen cherries","Frozen mango","Frozen strawberries","Oats","Broccoli","Spinach","Kale","Brussels sprouts","Bell peppers","Avocado","Banana","Apple","Sweet potato","Garlic","Onion","Lemon","Chickpeas","Lentils","Black beans","Edamame","Walnuts","Flaxseed","Chia seeds","Pumpkin seeds","Olive oil","Tomatoes","Cucumber","Arugula","Brown rice","Quinoa","Asparagus","Mushrooms","Carrots","Kimchi","Sauerkraut","Turmeric","Ginger","Cinnamon","Cumin","Paprika","Cocoa powder","Black pepper","Sesame seeds","Tahini","Kalamata olives"];
 
 const ICONS = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snacks:'🍎', custom:'✏️' };
 
-// ── STATE ────────────────────────────────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────────────────────
 
-const SK = 'sht2';
+const SK = 'sht3';
 function gs() { try { return JSON.parse(localStorage.getItem(SK)||'{}'); } catch { return {}; } }
 function ss(s) { localStorage.setItem(SK, JSON.stringify(s)); }
 function today() { return new Date().toISOString().split('T')[0]; }
@@ -464,7 +574,7 @@ function today() { return new Date().toISOString().split('T')[0]; }
 function gtd() {
   const s=gs(), d=today();
   if(!s.days) s.days={};
-  if(!s.days[d]) s.days[d]={water:0,checks:{},meals:[]};
+  if(!s.days[d]) s.days[d]={waterMl:0,prevWaterMl:0,checks:{},meals:[]};
   return s.days[d];
 }
 function std(data) { const s=gs(),d=today(); if(!s.days)s.days={}; s.days[d]=data; ss(s); }
@@ -474,25 +584,47 @@ function weekKey() {
   return new Date(new Date().setDate(diff)).toISOString().split('T')[0];
 }
 
-// ── WATER ────────────────────────────────────────────────────────────────────
+// ── WATER ─────────────────────────────────────────────────────────────────────
 
-const W_TARGET = 88;
+const W_TARGET_ML = 3000;
 
-function addWater(oz) {
-  const data=gtd(); data.water=Math.max(0,(data.water||0)+oz); std(data); renderWater();
+function addWater(ml) {
+  const data=gtd();
+  data.prevWaterMl = data.waterMl || 0;
+  data.waterMl = Math.max(0, (data.waterMl||0) + ml);
+  std(data);
+  renderWater();
+}
+
+function undoWater() {
+  const data=gtd();
+  data.waterMl = data.prevWaterMl || 0;
+  std(data);
+  renderWater();
 }
 
 function renderWater() {
-  const oz=(gtd().water||0), pct=Math.min(100,Math.round(oz/W_TARGET*100));
-  const n=g('waterNum'), b=g('waterBar'), sub=g('waterSub');
-  if(!n) return;
-  n.textContent=oz;
-  sub.textContent=`of ${W_TARGET} oz (2.6 L) · ${pct}%`;
-  b.style.width=pct+'%';
-  b.className='fill'+(pct>100?' over':'');
+  const ml=(gtd().waterMl||0);
+  const L=(ml/1000).toFixed(1);
+  const oz=Math.round(ml/29.574);
+  const targetOz=Math.round(W_TARGET_ML/29.574);
+  const pct=Math.min(100,Math.round(ml/W_TARGET_ML*100));
+
+  const wl=g('waterL'), oi=g('waterOzInline'), sub=g('waterSub'), bar=g('waterBar');
+  if(!wl) return;
+  wl.textContent=L;
+  oi.textContent=` L / ${oz} oz`;
+  sub.textContent=`of 3.0 L (${targetOz} oz) · ${pct}%`;
+  bar.style.width=pct+'%';
+  bar.className='fill'+(pct>=100?' ':pct>66?'':' ');
+
+  const undo=g('undoBtn');
+  if(undo) undo.style.display=ml>0?'':'none';
+
+  renderDashMacros();
 }
 
-// ── CHECKLIST ────────────────────────────────────────────────────────────────
+// ── CHECKLIST ─────────────────────────────────────────────────────────────────
 
 function toggleCheck(k) {
   const data=gtd(); if(!data.checks)data.checks={};
@@ -501,29 +633,10 @@ function toggleCheck(k) {
 
 function renderChecks() {
   const checks=(gtd().checks||{});
-  ['lemon','ferm','protein','order'].forEach(k=>{
+  ['lemon','vyvanse','smoothie','ferm','order','remeron'].forEach(k=>{
     const el=g('ck-'+k); if(!el) return;
     el.classList.toggle('done',!!checks[k]);
   });
-}
-
-// ── TIMER ────────────────────────────────────────────────────────────────────
-
-let _ti=null;
-function startTimer() { const s=gs(); s.tStart=Date.now(); ss(s); runTimer(); }
-function stopTimer() { const s=gs(); delete s.tStart; ss(s); clearInterval(_ti); _ti=null; renderTimer(); }
-function resetTimer() { stopTimer(); }
-
-function runTimer() { clearInterval(_ti); _ti=setInterval(renderTimer,1000); renderTimer(); }
-
-function renderTimer() {
-  const s=gs(), ti=g('t-idle'), tr=g('t-run'), td=g('t-done');
-  if(!ti) return;
-  if(!s.tStart) { ti.style.display=''; tr.style.display='none'; td.style.display='none'; return; }
-  const rem=3600-Math.floor((Date.now()-s.tStart)/1000);
-  if(rem<=0) { ti.style.display='none'; tr.style.display='none'; td.style.display=''; clearInterval(_ti); return; }
-  ti.style.display='none'; tr.style.display=''; td.style.display='none';
-  g('tCountdown').textContent=`${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
 }
 
 // ── MEAL LOG ─────────────────────────────────────────────────────────────────
@@ -547,7 +660,6 @@ function quickAdd() {
   const meals=flatPlan(g('qDay').value), m=meals[+g('qMeal').value];
   if(!m) return;
   pushMeal({name:m.name, type:m.key, kcal:m.kcal||0, p:m.p||0, c:m.c||0, f:m.f||0, fi:m.fi||0, sod:0, iron:!!m.iron, ox:false, ca:true});
-  if(m.iron) startTimer();
 }
 
 function toggleCaPair() { g('caPairGrp').style.display=g('mOx').checked?'':'none'; }
@@ -558,7 +670,6 @@ function logManual() {
   pushMeal({name, type:'custom', kcal:+g('mKcal').value||0, p:+g('mProt').value||0, c:+g('mCarb').value||0, f:+g('mFat').value||0, fi:+g('mFib').value||0, sod:+g('mSod').value||0, iron:g('mIron').checked, ox, ca:ox?ca:true});
   ['mName','mKcal','mProt','mCarb','mFat','mFib','mSod'].forEach(id=>{const el=g(id);if(el)el.value='';});
   g('mIron').checked=false; g('mOx').checked=false; g('mCa').checked=false; g('caPairGrp').style.display='none';
-  if(g('mIron').checked) startTimer();
 }
 
 function pushMeal(m) {
@@ -591,13 +702,12 @@ function renderLog() {
       </div>
       <button class="me-del" onclick="delMeal(${m.id})">×</button>
     </div>`).join(''):'<div class="empty">No meals logged yet today.</div>';
-
   const hasOxNoCa=(meals||[]).some(m=>m.ox&&!m.ca);
   g('oxAlert').style.display=hasOxNoCa?'':'none';
   renderMacroBars('logTotals', totals());
 }
 
-function renderDashMacros() { renderMacroBars('dashMacros', totals()); renderWater(); }
+function renderDashMacros() { renderMacroBars('dashMacros', totals()); }
 
 function renderMacroBars(cid, t) {
   const el=g(cid); if(!el) return;
@@ -606,7 +716,7 @@ function renderMacroBars(cid, t) {
     {label:'Carbs',   val:t.c,   max:280, unit:'g'},
     {label:'Fat',     val:t.f,   max:90,  unit:'g'},
     {label:'Fiber',   val:t.fi,  max:40,  unit:'g'},
-    {label:'Sodium',  val:t.sod, max:2300,unit:'mg'},
+    {label:'Sodium',  val:t.sod, max:2000,unit:'mg'},
   ];
   el.innerHTML=rows.map(r=>{
     const pct=Math.min(100,Math.round(r.val/r.max*100)), over=r.val>r.max;
@@ -614,7 +724,7 @@ function renderMacroBars(cid, t) {
   }).join('')+`<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:6px">${Math.round(t.kcal)} / 2,400 kcal · ${t.kcal<2400?`${Math.round(2400-t.kcal)} remaining`:'✓ target reached'}</div>`;
 }
 
-// ── PLANTS ────────────────────────────────────────────────────────────────────
+// ── PLANTS ───────────────────────────────────────────────────────────────────
 
 let _ringChart=null;
 
@@ -671,7 +781,7 @@ function renderPlants() {
   }
 }
 
-// ── BIOMARKERS ────────────────────────────────────────────────────────────────
+// ── BIOMARKERS ───────────────────────────────────────────────────────────────
 
 const _bmCharts={};
 
@@ -734,7 +844,7 @@ function renderBM() {
   });
 }
 
-// ── MEAL PLAN TAB ─────────────────────────────────────────────────────────────
+// ── MEAL PLAN TAB ────────────────────────────────────────────────────────────
 
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 let _planDay=DAYS[new Date().getDay()===0?6:new Date().getDay()-1];
@@ -769,7 +879,7 @@ function renderPlanCards() {
         ${s.meal.ferm?'<span class="pill pill-ferm">🥛 Fermented</span>':''}
       </div>
       ${s.meal.prep?`<button class="pexpbtn" onclick="togglePC(${i})">▸ Show prep</button><div class="pprep">${s.meal.prep}</div>`:''}
-      <button class="log-btn" onclick="logFromPlan('${_planDay}','${s.type}','${s.key}',${i})">+ Log this meal</button>
+      <button class="log-btn" onclick="logFromPlan(${i})">+ Log this meal</button>
     </div>`).join('');
 }
 
@@ -779,19 +889,18 @@ function togglePC(i) {
   btn.textContent=card.classList.contains('exp')?'▾ Hide prep':'▸ Show prep';
 }
 
-function logFromPlan(dayName, type, key, secIdx) {
-  const day=PLAN[dayName], secs=[];
+function logFromPlan(secIdx) {
+  const day=PLAN[_planDay], secs=[];
   if(day.breakfast) secs.push({type:'Breakfast',key:'breakfast',meal:day.breakfast});
   if(day.lunch)     secs.push({type:'Lunch',    key:'lunch',    meal:day.lunch});
   if(day.dinner)    secs.push({type:'Dinner',   key:'dinner',   meal:day.dinner});
   (day.snacks||[]).forEach((s,i)=>secs.push({type:`Snack ${i+1}`,key:'snacks',meal:s}));
   const s=secs[secIdx]; if(!s) return;
   pushMeal({name:s.meal.name, type:s.key, kcal:s.meal.kcal||0, p:s.meal.p||0, c:s.meal.c||0, f:s.meal.f||0, fi:s.meal.fi||0, sod:0, iron:!!s.meal.iron, ox:false, ca:true});
-  if(s.meal.iron) startTimer();
   go('log');
 }
 
-// ── GROCERY ────────────────────────────────────────────────────────────────────
+// ── GROCERY ──────────────────────────────────────────────────────────────────
 
 function showGrocery() {
   const body=g('groceryBody');
@@ -817,47 +926,42 @@ function go(tab) {
   if(tab==='labs') renderBM();
   if(tab==='plan') { renderDayTabs(); renderPlanCards(); }
   if(tab==='log') renderLog();
-  if(tab==='dash') { renderDashMacros(); renderChecks(); renderTimer(); }
+  if(tab==='dash') { renderDashMacros(); renderChecks(); renderWater(); }
 }
-
-// ── HELPERS ────────────────────────────────────────────────────────────────────
 
 function g(id) { return document.getElementById(id); }
 
-// ── INIT ────────────────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────────────
 
 function init() {
   const now=new Date();
   g('hdrDate').textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 
-  // Set today in quick-add
   const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   g('qDay').value=dn[now.getDay()];
   updateQMeals();
 
-  // Biomarker date default
   g('bmDate').value=today();
 
-  // Pre-populate Scott's known values if first run
+  // Pre-populate Scott's known biomarker values if first run
   const s=gs();
   if(!s.bm) {
     s.bm={
-      a1c: [{date:'2026-05-01',value:5.7}],
-      vitd:[{date:'2026-05-01',value:20}],
-      hgb: [{date:'2026-05-01',value:13.8}],
-      ldl: [{date:'2024-05-01',value:160},{date:'2026-05-01',value:102}],
-      sbp: [{date:'2025-11-01',value:128}],
-      dbp: [{date:'2025-11-01',value:70}]
+      a1c:     [{date:'2026-05-01',value:5.7}],
+      vitd:    [{date:'2026-05-01',value:20}],
+      hgb:     [{date:'2026-05-01',value:13.8}],
+      ldl:     [{date:'2024-05-01',value:160},{date:'2026-05-01',value:102}],
+      sbp:     [{date:'2025-11-01',value:128}],
+      dbp:     [{date:'2025-11-01',value:70}],
+      ferritin:[]
     };
+    Object.keys(s.bm).forEach(k=>s.bm[k].sort((a,b)=>a.date.localeCompare(b.date)));
     ss(s);
   }
 
   renderWater(); renderChecks(); renderDashMacros();
   renderLog(); renderBM(); renderPlants();
   renderDayTabs(); renderPlanCards();
-
-  const st=gs();
-  if(st.tStart) runTimer(); else renderTimer();
 }
 
 document.addEventListener('DOMContentLoaded', init);
