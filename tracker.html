@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Scott's Health Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary: #2a9d8f; --primary-dark: #1f7a6e; --primary-light: #e8f5f3;
+  --accent: #e76f51; --success: #52b788; --danger: #e63946;
+  --warn-bg: #fff8e6; --warn-border: #e9c46a;
+  --text: #1a1a2e; --muted: #6b7280; --bg: #f0f4f3; --card: #fff; --border: #e5e7eb;
+  --nav: 64px; --hdr: 56px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); max-width: 480px; margin: 0 auto; min-height: 100vh; }
+
+.hdr { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--hdr); background: var(--primary); color: #fff; display: flex; align-items: center; padding: 0 16px; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.hdr h1 { font-size: 18px; font-weight: 800; }
+.hdr-date { font-size: 13px; opacity: .85; margin-left: auto; }
+
+.content { padding-top: calc(var(--hdr) + 12px); padding-bottom: calc(var(--nav) + 12px); padding-inline: 12px; }
+.pane { display: none; } .pane.on { display: block; }
+
+.nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--nav); background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,.08); }
+.nb { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 10px; font-weight: 700; padding: 8px 4px; }
+.nb.on { color: var(--primary); } .nb svg { width: 22px; height: 22px; }
+
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+.card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 12px; }
+
+.track { background: var(--border); border-radius: 99px; height: 10px; overflow: hidden; margin: 6px 0; }
+.fill { height: 100%; border-radius: 99px; background: var(--primary); transition: width .3s; }
+.fill.over { background: var(--danger); }
+
+/* Water */
+.water-display { text-align: center; margin: 8px 0; }
+.water-l { font-size: 48px; font-weight: 900; color: var(--primary); line-height: 1; }
+.water-oz-label { font-size: 16px; color: var(--muted); font-weight: 500; }
+.water-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.water-btns { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+.wbtn { background: var(--primary-light); color: var(--primary-dark); border: none; border-radius: 12px; padding: 12px 0; font-weight: 800; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.wbtn-l { font-size: 17px; }
+.wbtn-oz { font-size: 10px; color: var(--primary-dark); opacity: .7; }
+.undo-btn { background: none; border: none; font-size: 12px; color: var(--muted); text-decoration: underline; cursor: pointer; display: block; margin: 8px auto 0; }
+
+/* Checklist */
+.ci { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.ci:last-child { border-bottom: none; }
+.ci-circle { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+.ci-circle.done { background: var(--success); border-color: var(--success); color: #fff; }
+.ci-label { font-size: 14px; font-weight: 700; }
+.ci-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+/* Reminders */
+.rem-section { margin-bottom: 14px; }
+.rem-section:last-child { margin-bottom: 0; }
+.rem-time { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--primary); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1.5px solid var(--primary-light); }
+.rem-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.rem-row:last-child { border-bottom: none; }
+.rem-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; margin-top: 1px; }
+.rem-text { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.rem-sub { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+.rem-warn { background: var(--warn-bg); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; border: 1.5px solid var(--warn-border); }
+.rem-warn-text { font-size: 12px; color: #7a5c00; font-weight: 600; line-height: 1.4; }
+
+/* Macro rows */
+.mrow { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.mlabel { font-size: 12px; font-weight: 700; width: 58px; flex-shrink: 0; }
+.mbar { flex: 1; }
+.mval { font-size: 11px; color: var(--muted); width: 72px; text-align: right; flex-shrink: 0; }
+
+/* Buttons */
+.btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-p { background: var(--primary); color: #fff; }
+.btn-o { background: none; border: 2px solid var(--primary); color: var(--primary); }
+.btn-full { width: 100%; }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
+/* Forms */
+.fg { margin-bottom: 12px; }
+.fl { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); display: block; margin-bottom: 4px; }
+input[type=text], input[type=number], input[type=date], select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; background: #fff; color: var(--text); appearance: none; }
+input:focus, select:focus { outline: none; border-color: var(--primary); }
+.fr2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cbwrap { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.cbwrap input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+
+/* Meal log */
+.me { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.me:last-child { border-bottom: none; }
+.me-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+.me-name { font-size: 14px; font-weight: 700; }
+.me-macros { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.me-del { margin-left: auto; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; padding: 0 4px; flex-shrink: 0; }
+
+/* Plants */
+.ring-wrap { display: flex; flex-direction: column; align-items: center; padding: 8px 0; }
+.ring-box { position: relative; width: 140px; height: 140px; }
+.ring-box canvas { position: absolute; top: 0; left: 0; }
+.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-num { font-size: 40px; font-weight: 900; color: var(--primary); line-height: 1; }
+.ring-goal { font-size: 12px; color: var(--muted); }
+.ptag { background: var(--primary-light); color: var(--primary-dark); border-radius: 99px; padding: 5px 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; margin: 3px; }
+.ptag-x { background: none; border: none; cursor: pointer; color: var(--primary-dark); font-size: 15px; padding: 0; }
+.qpbtn { background: #fff; border: 1.5px solid var(--border); border-radius: 99px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; margin: 3px; }
+.qpbtn.added { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+/* Biomarkers */
+.bmcard { background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+.bmhdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.bmname { font-size: 14px; font-weight: 800; }
+.badge { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+.bg-good { background: #dcf5e7; color: #1a7a3e; }
+.bg-warn { background: var(--warn-bg); color: #a07000; }
+.bg-bad { background: #fde8e8; color: #b91c1c; }
+.bmval { font-size: 30px; font-weight: 900; line-height: 1.1; }
+.bmunit { font-size: 15px; color: var(--muted); font-weight: 400; }
+.bmdate { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.bmchart { margin-top: 10px; height: 80px; }
+.bmrecheck { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* Plan tab */
+.daytabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 12px; }
+.daytabs::-webkit-scrollbar { display: none; }
+.dtab { flex-shrink: 0; padding: 7px 14px; border-radius: 99px; border: 1.5px solid var(--border); background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--muted); }
+.dtab.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.pcard { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.ptype { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 4px; }
+.pname { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+.ppills { display: flex; flex-wrap: wrap; gap: 5px; }
+.pill { font-size: 11px; background: var(--bg); border-radius: 99px; padding: 3px 8px; font-weight: 700; color: var(--muted); }
+.pill-iron { background: #fde8e8; color: #991b1b; }
+.pill-ferm { background: #dcf5e7; color: #1a7a3e; }
+.pprep { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.55; display: none; }
+.pcard.exp .pprep { display: block; }
+.pexpbtn { background: none; border: none; font-size: 12px; color: var(--primary); cursor: pointer; padding: 0; margin-top: 6px; font-weight: 700; }
+.log-btn { background: var(--primary-light); color: var(--primary-dark); border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+
+/* Alerts */
+.alert { border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-bottom: 10px; display: flex; gap: 8px; }
+.alert-w { background: var(--warn-bg); border: 1.5px solid var(--warn-border); color: #7a5c00; }
+.alert-i { background: var(--primary-light); border: 1.5px solid #a8d8d3; color: #1a5c55; }
+
+/* Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: #fff; border-radius: 20px 20px 0 0; padding: 20px 16px; width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
+.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.sheet-title { font-size: 18px; font-weight: 900; margin-bottom: 16px; }
+
+.empty { text-align: center; padding: 24px; color: var(--muted); font-size: 14px; }
+.sec-head { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 14px 0 8px; }
+.flex-sb { display: flex; align-items: center; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <h1>🌿 Scott's Health</h1>
+  <span class="hdr-date" id="hdrDate"></span>
+</header>
+
+<div class="content">
+
+<!-- ── DASHBOARD ── -->
+<div class="pane on" id="pane-dash">
+
+  <div class="card">
+    <div class="card-title">💧 Daily Water — Target 3 L</div>
+    <div class="water-display">
+      <div><span class="water-l" id="waterL">0.0</span><span class="water-oz-label" id="waterOzInline"> L / 0 oz</span></div>
+      <div class="water-sub" id="waterSub">of 3.0 L (101 oz) · 0%</div>
+    </div>
+    <div class="track"><div class="fill" id="waterBar" style="width:0%"></div></div>
+    <div class="water-btns">
+      <button class="wbtn" onclick="addWater(400)">
+        <span class="wbtn-l">+0.4 L</span>
+        <span class="wbtn-oz">~14 oz</span>
+      </button>
+      <button class="wbtn" onclick="addWater(700)">
+        <span class="wbtn-l">+0.7 L</span>
+        <span class="wbtn-oz">~24 oz</span>
+      </button>
+    </div>
+    <button class="undo-btn" id="undoBtn" onclick="undoWater()" style="display:none">undo last</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✅ Today's Non-Negotiables</div>
+    <div class="ci" onclick="toggleCheck('lemon')">
+      <div class="ci-circle" id="ck-lemon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">🍋 Lemon water first thing</div><div class="ci-sub">2 Tbsp lemon juice · citrate for kidney stones</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('vyvanse')">
+      <div class="ci-circle" id="ck-vyvanse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">💊 Vyvanse + Vit D3 + Fish oil</div><div class="ci-sub">Take immediately on waking, with smoothie</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('smoothie')">
+      <div class="ci-circle" id="ck-smoothie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">🥤 Morning smoothie (25g+ protein)</div><div class="ci-sub">Blunts Vyvanse blood sugar instability</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('ferm')">
+      <div class="ci-circle" id="ck-ferm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">🥛 Fermented food (add cold)</div><div class="ci-sub">Yogurt · kimchi · sauerkraut · kefir — never heat</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('order')">
+      <div class="ci-circle" id="ck-order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">🥗 Protein/veg before carbs</div><div class="ci-sub">At every meal · 20–30% lower post-meal glucose</div></div>
+    </div>
+    <div class="ci" onclick="toggleCheck('remeron')">
+      <div class="ci-circle" id="ck-remeron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="ci-label">💊 Remeron + Magnesium at 9–9:30 PM</div><div class="ci-sub">With a light protein snack · lights out by 10 PM</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Reminders</div>
+
+    <div class="rem-section">
+      <div class="rem-time">☀️ Morning</div>
+      <div class="rem-row">
+        <div class="rem-icon">💊</div>
+        <div><div class="rem-text">Vyvanse before you blend, not after</div><div class="rem-sub">Earlier it peaks = earlier it clears = better sleep</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🫙</div>
+        <div><div class="rem-text">Vit D3 4,000 IU + Fish oil with smoothie</div><div class="rem-sub">Fat-soluble — the peanut butter/flax/chia fat in the smoothie is the ideal carrier</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">☕</div>
+        <div><div class="rem-text">Caffeine cap: 1 cup AM, nothing after noon</div><div class="rem-sub">Coffee after noon extends stimulant activity and compromises Remeron's sleep effect</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">🥩 Iron-Rich Meals (beef, lentils, salmon, chicken)</div>
+      <div class="rem-row">
+        <div class="rem-icon">☕</div>
+        <div><div class="rem-text">No coffee or tea for 60 min after</div><div class="rem-sub">Polyphenols reduce non-heme iron absorption by up to 90%</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🍋</div>
+        <div><div class="rem-text">Add lemon juice at the same meal</div><div class="rem-sub">Vitamin C forms a soluble iron chelate — dramatically boosts non-heme absorption</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">🌞 Midday</div>
+      <div class="rem-row">
+        <div class="rem-icon">🚶</div>
+        <div><div class="rem-text">5 min outdoor light + walk after lunch</div><div class="rem-sub">Resets afternoon cortisol peak, lowers post-lunch glucose</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">💧</div>
+        <div><div class="rem-text">Hit 2 of 3 L before 4 PM</div><div class="rem-sub">Mild dehydration reduces energy and cognitive performance during RN shifts</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">🌙 Evening</div>
+      <div class="rem-row">
+        <div class="rem-icon">🍽️</div>
+        <div><div class="rem-text">Use Remeron's evening hunger for protein</div><div class="rem-sub">Greek yogurt + walnuts, cottage cheese, banana + PB — not chips or refined carbs</div></div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-icon">🛌</div>
+        <div><div class="rem-text">Lights out by 10 PM after 9:30 PM dose</div><div class="rem-sub">Remeron works best on a consistent sleep schedule — variable timing fragments sleep architecture</div></div>
+      </div>
+    </div>
+
+    <div class="rem-section">
+      <div class="rem-time">⚠️ Always</div>
+      <div class="rem-row">
+        <div class="rem-icon">🥬</div>
+        <div><div class="rem-text">Never heat fermented food</div><div class="rem-sub">Add kimchi and sauerkraut cold — heat kills live cultures</div></div>
+      </div>
+      <div class="rem-warn">
+        <div style="font-size:18px">⛔</div>
+        <div class="rem-warn-text">Ashwagandha is on hold — do not take until your prescriber specifically clears it. Raises serotonin activity + additive sedation with Remeron = interaction risk.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Today's Macros</div>
+    <div id="dashMacros"></div>
+  </div>
+
+</div>
+
+<!-- ── MEAL LOG ── -->
+<div class="pane" id="pane-log">
+
+  <div class="alert alert-w" id="oxAlert" style="display:none">⚠️ Oxalate-rich foods logged without a calcium source. Pair with yogurt, cheese, or milk.</div>
+
+  <div class="card">
+    <div class="card-title">⚡ Quick-Add From Plan</div>
+    <div class="fg"><label class="fl">Day</label>
+      <select id="qDay" onchange="updateQMeals()">
+        <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+        <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Meal</label><select id="qMeal"></select></div>
+    <button class="btn btn-p btn-full" onclick="quickAdd()">Log This Meal</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✏️ Manual Entry</div>
+    <div class="fg"><label class="fl">Meal Name</label><input type="text" id="mName" placeholder="e.g. Chicken and rice bowl"></div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Protein (g)</label><input type="number" id="mProt" placeholder="0" min="0"></div>
+      <div class="fg"><label class="fl">Carbs (g)</label><input type="number" id="mCarb" placeholder="0" min="0"></div>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Fat (g)</label><input type="number" id="mFat" placeholder="0" min="0"></div>
+      <div class="fg"><label class="fl">Fiber (g)</label><input type="number" id="mFib" placeholder="0" min="0"></div>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Sodium (mg)</label><input type="number" id="mSod" placeholder="0" min="0"></div>
+      <div class="fg"><label class="fl">Calories</label><input type="number" id="mKcal" placeholder="0" min="0"></div>
+    </div>
+    <div class="fg"><label class="cbwrap"><input type="checkbox" id="mIron"> Iron-rich meal (beef, lentils, salmon, chicken)</label></div>
+    <div class="fg"><label class="cbwrap"><input type="checkbox" id="mOx" onchange="toggleCaPair()"> Contains oxalate-rich foods (spinach, almonds, beets, berries)</label></div>
+    <div class="fg" id="caPairGrp" style="display:none"><label class="cbwrap"><input type="checkbox" id="mCa"> Paired with calcium source (yogurt, cheese, milk)</label></div>
+    <button class="btn btn-p btn-full" onclick="logManual()">Log Meal</button>
+  </div>
+
+  <div class="card">
+    <div class="flex-sb" style="margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:0">📋 Today's Log</div>
+      <button class="btn btn-sm btn-o" onclick="clearLog()" style="font-size:11px;padding:5px 10px">Clear All</button>
+    </div>
+    <div id="logList"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Running Totals</div>
+    <div id="logTotals"></div>
+  </div>
+
+</div>
+
+<!-- ── PLANTS ── -->
+<div class="pane" id="pane-plants">
+  <div class="card">
+    <div class="card-title">🌱 This Week's Plant Foods</div>
+    <div class="ring-wrap">
+      <div class="ring-box">
+        <canvas id="ringCanvas" width="140" height="140"></canvas>
+        <div class="ring-center"><div class="ring-num" id="plantNum">0</div><div class="ring-goal">of 30</div></div>
+      </div>
+      <div id="weekLabel" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)">
+      Your daily smoothie base alone counts 4–8 plants. Spices count as ¼ plant each (4 spices = 1).
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">➕ Add a Plant Food</div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="plantIn" placeholder="e.g. blueberries, oats, turmeric…" onkeydown="if(event.key==='Enter')addPlant()" style="flex:1">
+      <button class="btn btn-p" onclick="addPlant()">Add</button>
+    </div>
+    <div class="sec-head">Quick Add</div>
+    <div id="qpGrid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 This Week's Plants</div>
+    <div id="plantTags"></div>
+  </div>
+</div>
+
+<!-- ── BIOMARKERS ── -->
+<div class="pane" id="pane-labs">
+  <div class="card">
+    <div class="card-title">➕ Log Lab Result</div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Marker</label>
+        <select id="bmType">
+          <option value="a1c">A1C (%)</option>
+          <option value="vitd">Vitamin D (ng/mL)</option>
+          <option value="hgb">Hemoglobin (g/dL)</option>
+          <option value="ldl">LDL (mg/dL)</option>
+          <option value="sbp">Systolic BP (mmHg)</option>
+          <option value="dbp">Diastolic BP (mmHg)</option>
+          <option value="ferritin">Ferritin (ng/mL)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Value</label><input type="number" id="bmVal" step="0.1" placeholder="e.g. 5.7"></div>
+    </div>
+    <div class="fg"><label class="fl">Date</label><input type="date" id="bmDate"></div>
+    <button class="btn btn-p btn-full" onclick="logBM()">Save Result</button>
+  </div>
+  <div id="bmCards"></div>
+</div>
+
+<!-- ── MEAL PLAN ── -->
+<div class="pane" id="pane-plan">
+  <div class="daytabs" id="dayTabs"></div>
+  <div id="planCards"></div>
+  <button class="btn btn-o btn-full" style="margin-top:4px" onclick="showGrocery()">🛒 View Costco Grocery List</button>
+</div>
+
+</div>
+
+<nav class="nav">
+  <button class="nb on" id="nb-dash" onclick="go('dash')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Today
+  </button>
+  <button class="nb" id="nb-log" onclick="go('log')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Meals
+  </button>
+  <button class="nb" id="nb-plants" onclick="go('plants')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12"/><path d="M12 12C12 12 7 9 7 4a5 5 0 0 1 10 0c0 5-5 8-5 8z"/><path d="M12 12c0 0-3 3.5-3 7"/></svg>Plants
+  </button>
+  <button class="nb" id="nb-labs" onclick="go('labs')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Labs
+  </button>
+  <button class="nb" id="nb-plan" onclick="go('plan')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>Plan
+  </button>
+</nav>
+
+<div class="overlay" id="groceryModal" style="display:none" onclick="if(event.target===this)closeGrocery()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🛒 Costco Grocery List</div>
+    <div id="groceryBody"></div>
+    <button class="btn btn-p btn-full" style="margin-top:16px" onclick="closeGrocery()">Done</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+const PLAN = {
+  Monday: {
+    breakfast: { name:"Energy Smoothie: Blueberry + Cinnamon", kcal:540, p:36, c:62, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop Costco chocolate protein powder · 2 Tbsp flaxseed meal · 1 Tbsp chia seeds · ⅓ cup sprouted rolled oats · 2 Tbsp Ted's peanut butter · ½ cup frozen blueberries · ½ tsp cinnamon. Blend 60 sec. Take Vyvanse + Vitamin D3 4,000 IU + fish oil with first sip." },
+    lunch: { name:"Kirkland Organic Chicken Rice Bowl", kcal:580, p:45, c:58, f:16, fi:9, iron:false, ferm:false,
+      prep:"Microwave Kirkland brown rice pouch and 1 cup frozen broccoli (3 min each). Pull 5 oz Kirkland organic chicken. Bowl with rice, broccoli, chicken, 3 Tbsp hummus, juice of ½ lemon, drizzle EVOO. 5 minutes." },
+    dinner: { name:"Sheet-Pan Salmon + Broccoli + Brown Rice", kcal:620, p:48, c:52, f:20, fi:8, iron:false, ferm:false,
+      prep:"425°F. Sheet pan: 6 oz Costco salmon + 1.5 cups frozen broccoli, drizzle Kirkland EVOO, garlic powder, sea salt, black pepper. Roast 18 min. Serve over ¾ cup Kirkland brown rice." },
+    snacks: [
+      { name:"Kirkland Greek Yogurt + Frozen Berries + Walnuts", kcal:280, p:18, c:22, f:14, fi:4, iron:false, ferm:true },
+      { name:"Apple + Ted's Peanut Butter", kcal:270, p:8, c:36, f:14, fi:6, iron:false, ferm:false }
+    ]
+  },
+  Tuesday: {
+    breakfast: { name:"Energy Smoothie: Frozen Mango + Turmeric", kcal:545, p:36, c:64, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · ½ cup frozen mango · pinch turmeric · pinch black pepper. Black pepper activates curcumin absorption — do not skip. Blend 60 sec." },
+    lunch: { name:"Lentil + Chickpea Bowl", kcal:560, p:28, c:72, f:14, fi:18, iron:true, ferm:false,
+      prep:"No cook. Combine: ½ cup Kirkland canned lentils (warmed) · ½ cup Kirkland canned chickpeas (rinsed) · ½ cup diced cucumber · ½ cup cherry tomatoes · 2 Tbsp tahini · juice of ½ lemon · sea salt · optional 1 oz feta (calcium pairs with lentil oxalate). The lemon is the vitamin C that boosts non-heme iron — do not skip." },
+    dinner: { name:"Ground Turkey Stir-Fry + Brown Rice", kcal:600, p:46, c:54, f:18, fi:8, iron:true, ferm:false,
+      prep:"Brown 5 oz Kirkland ground turkey over medium-high heat, 7–8 min. Add thawed Costco stir-fry veg mix. Add 2 Tbsp tamari + ½ tsp garlic powder + 1 tsp sesame seeds. Stir 2 min. Serve over ¾ cup Kirkland brown rice. One pan, 12 minutes." },
+    snacks: [
+      { name:"Kirkland Cottage Cheese + Pineapple", kcal:190, p:20, c:18, f:4, fi:1, iron:false, ferm:false }
+    ]
+  },
+  Wednesday: {
+    breakfast: { name:"Energy Smoothie: Frozen Strawberry + Ginger", kcal:535, p:36, c:60, f:18, fi:11, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen strawberries · ¼ tsp ground ginger. Blend 60 sec." },
+    lunch: { name:"Canned Salmon Poke Bowl", kcal:580, p:42, c:52, f:18, fi:8, iron:true, ferm:false,
+      prep:"No-cook assembly. Bowl: ¾ cup Kirkland brown rice (microwave pouch) · 1 can Kirkland canned wild salmon (drained) · ½ avocado sliced · ½ cup sliced cucumber · 1 Tbsp tamari + 1 tsp sesame seeds + ½ tsp sesame oil. Optional: 1 Tbsp kimchi on the side (add cold)." },
+    dinner: { name:"Kirkland Organic Chicken + Sweet Potato + Spinach Salad", kcal:580, p:46, c:48, f:16, fi:9, iron:false, ferm:false,
+      prep:"Microwave 1 medium sweet potato 8 min (split and mash lightly). Pull 5 oz Kirkland organic chicken. Toss 2 cups baby spinach with ¼ cup walnuts + lemon juice + EVOO. Plate everything. 10 minutes. Walnuts alongside spinach provide calcium to pair with spinach oxalate." },
+    snacks: [
+      { name:"Kirkland Hummus + Baby Carrots", kcal:200, p:6, c:26, f:8, fi:7, iron:false, ferm:false },
+      { name:"Sauerkraut on the side of any meal", kcal:20, p:1, c:3, f:0, fi:1, iron:false, ferm:true }
+    ]
+  },
+  Thursday: {
+    breakfast: { name:"Energy Smoothie: Cocoa + Banana", kcal:560, p:37, c:66, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · 1 Tbsp unsweetened cocoa powder · ½ frozen banana · pinch cinnamon. Dark cocoa = concentrated polyphenol source for sebopsoriasis. Blend 60 sec." },
+    lunch: { name:"Kirkland Organic Chicken + Brown Rice + Sauerkraut", kcal:560, p:44, c:52, f:16, fi:7, iron:false, ferm:true,
+      prep:"Microwave ¾ cup Kirkland brown rice. Pull 5 oz Kirkland organic chicken. Assemble bowl with chicken, rice, drizzle EVOO + squeeze lemon + sea salt. Add ¼ cup sauerkraut cold on the side — do not heat it (kills probiotics). Fermented food check: done." },
+    dinner: { name:"Microwave Lentil Pouch + Brown Rice + Steamed Kale", kcal:520, p:28, c:72, f:10, fi:16, iron:true, ferm:false,
+      prep:"Microwave 1 Tasty Bite lentil pouch or 1 cup Kirkland canned lentils (warmed). Microwave ¾ cup brown rice. Microwave 1.5 cups Costco frozen kale 3 min. Combine in a bowl. Drizzle Kirkland EVOO + pinch turmeric + sea salt. 5 minutes flat." },
+    snacks: [
+      { name:"Kirkland Greek Yogurt + Walnuts + Banana", kcal:320, p:18, c:32, f:14, fi:4, iron:false, ferm:true },
+      { name:"Costco Pre-Boiled Eggs (2)", kcal:140, p:12, c:1, f:10, fi:0, iron:false, ferm:false }
+    ]
+  },
+  Friday: {
+    breakfast: { name:"Energy Smoothie: Frozen Cherries + Cinnamon", kcal:545, p:36, c:63, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen cherries · ½ tsp cinnamon. Cherries = concentrated anthocyanins, one of the strongest polyphenol classes for reducing inflammatory markers. Blend 60 sec." },
+    lunch: { name:"Canned Salmon + Chickpea + Olive + Tomato Bowl", kcal:570, p:40, c:44, f:20, fi:12, iron:true, ferm:false,
+      prep:"No cook. Combine: 1 can Kirkland canned wild salmon (drained) · ½ cup Kirkland canned chickpeas (rinsed) · ½ cup cherry tomatoes halved · 8 Kalamata olives chopped · 1.5 Tbsp Kirkland EVOO + juice of ½ lemon + sea salt. Two omega-3 sources (salmon + EVOO) + polyphenols from olives." },
+    dinner: { name:"Sheet-Pan Salmon + Brussels Sprouts + Quinoa", kcal:620, p:48, c:44, f:22, fi:9, iron:false, ferm:false,
+      prep:"425°F. Sheet pan: 6 oz Costco salmon + 1.5 cups Costco frozen Brussels sprouts, drizzle Kirkland EVOO + garlic powder + paprika + sea salt. Roast 18 min. Serve over ¾ cup cooked Kirkland quinoa. Second salmon of the week — covers omega-3 and Vitamin D." },
+    snacks: [
+      { name:"1 oz Dark Chocolate (85%+) + Kirkland Walnuts", kcal:280, p:5, c:14, f:22, fi:3, iron:false, ferm:false },
+      { name:"Kirkland Edamame (1 cup microwaved)", kcal:190, p:17, c:14, f:8, fi:8, iron:true, ferm:false }
+    ]
+  },
+  Saturday: {
+    breakfast: { name:"Energy Smoothie: Banana + Spinach", kcal:545, p:36, c:65, f:18, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · ½ avocado · 1 cup baby spinach · ½ frozen banana. Spinach is invisible in a chocolate smoothie. Note: spinach has oxalate — pair this breakfast with a small cup of Kirkland Greek yogurt on the side (calcium binds spinach oxalate)." },
+    lunch: { name:"Kirkland Organic Chicken + Frozen Veg + Brown Rice + Kimchi", kcal:570, p:44, c:52, f:16, fi:9, iron:false, ferm:true,
+      prep:"Microwave Kirkland brown rice pouch and Costco stir-fry veg mix (3 min each). Pull 5 oz Kirkland organic chicken. Assemble with 1 tsp EVOO + sea salt. Add ¼ cup kimchi cold on the side." },
+    dinner: { name:"Eggs + Black Beans + Peppers + Tortilla", kcal:590, p:36, c:56, f:24, fi:12, iron:false, ferm:false,
+      prep:"Scramble 3 Kirkland organic eggs with olive oil spray, 3–4 min. Warm ½ cup Kirkland black beans (microwave 90 sec) and ½ cup Costco frozen peppers (microwave 2 min). Assemble in 1 whole wheat tortilla with 2 Tbsp Kirkland salsa + ¼ avocado. 10 minutes, 6 ingredients." },
+    snacks: [
+      { name:"Kirkland Greek Yogurt + Honey + Walnuts", kcal:280, p:18, c:22, f:14, fi:2, iron:false, ferm:true }
+    ]
+  },
+  Sunday: {
+    breakfast: { name:"Energy Smoothie: Blueberries + Walnuts", kcal:550, p:37, c:62, f:20, fi:12, iron:false, ferm:false,
+      prep:"Blend: 1 cup Kirkland oat milk · ½ cup Kirkland almond milk · 1 scoop protein powder · 2 Tbsp flaxseed · 1 Tbsp chia · ⅓ cup sprouted oats · 2 Tbsp Ted's peanut butter · ½ cup frozen blueberries · 1 oz Kirkland walnuts. Walnuts add plant-based ALA omega-3 + polyphenols alongside the flax and chia already in the base." },
+    lunch: { name:"Leftover Salmon + Brown Rice + Edamame + Ginger-Tamari", kcal:575, p:44, c:50, f:18, fi:9, iron:true, ferm:false,
+      prep:"Use leftover salmon from Friday/Saturday dinner or 1 can Kirkland canned wild salmon. Microwave Kirkland brown rice pouch and ½ cup Kirkland frozen edamame (2 min). Bowl with rice, salmon, edamame, ½ cup sliced cucumber. Dress with 1 Tbsp tamari + ¼ tsp ginger powder + ½ tsp sesame oil." },
+    dinner: { name:"Kirkland Organic Chicken Thighs + Brussels Sprouts + Sweet Potato", kcal:640, p:48, c:50, f:22, fi:10, iron:false, ferm:false,
+      prep:"425°F. Toss 1.5 cups Costco frozen Brussels sprouts + 1 medium sweet potato (cubed) with 1 Tbsp Kirkland EVOO + half the seasoning on a sheet pan. Season 2 Kirkland organic chicken thighs (bone-in) with remaining EVOO + 1 tsp garlic powder + 1 tsp paprika + sea salt, skin-side up. Roast 28–30 min until chicken hits 165°F." },
+    snacks: [
+      { name:"Banana + Ted's Peanut Butter", kcal:200, p:6, c:30, f:8, fi:3, iron:false, ferm:false },
+      { name:"Kirkland Greek Yogurt + Frozen Berries", kcal:180, p:16, c:18, f:4, fi:3, iron:false, ferm:true }
+    ]
+  }
+};
+
+const GROCERY = {
+  "Produce": [
+    "Bananas — Costco fresh bunch (prebiotic, potassium, evening snack)","Apples — Costco 3-lb bag","Avocados — Costco bag of 5","Lemons — Costco 5-lb bag (squeeze daily into water for kidney stones)","Cucumbers — Costco 4-pack","Cherry tomatoes — Costco 2-pint container","Sweet potatoes — Costco 5-lb bag","Garlic — Costco 3-head pack","Ginger — fresh knob or ground","Costco fresh baby spinach — 5 oz container",
+    "Costco frozen berry blend (blueberries + strawberries + cherries) — smoothie add-ins","Costco frozen mango chunks","Costco frozen broccoli — 2 lb bag","Costco frozen stir-fry vegetable mix","Costco frozen Brussels sprouts — 1.5 lb bag","Costco frozen kale or spinach","Costco frozen pepper strips","Bell peppers or Costco frozen pepper strips"
+  ],
+  "Proteins": [
+    "Costco fresh salmon filet — large piece, portion into 6 oz and freeze","Kirkland organic chicken thighs (bone-in, frozen bag)","Kirkland organic chicken breast — 1.5 lbs","Kirkland ground turkey — 1 lb","Kirkland canned wild salmon — 6-pack","Kirkland canned albacore tuna in water — 6-pack","Costco pre-boiled eggs — 2 dozen pack","Kirkland organic large eggs — 2 dozen pack"
+  ],
+  "Dairy & Fermented": [
+    "Kirkland plain Greek yogurt 2% — 48 oz container","Kirkland cottage cheese — 24 oz container","Sauerkraut — refrigerated unpasteurized (NOT shelf-stable canned — no live cultures)","Kimchi — refrigerated unpasteurized (refrigerated Korean-brand if Costco is out)","Kirkland Parmesan wedge — optional, for salads"
+  ],
+  "Grains, Legumes & Pantry": [
+    "Kirkland organic brown rice — 25 lb bag OR Costco brown rice microwave pouches (90-sec)","Kirkland organic quinoa","Kirkland organic sprouted rolled oats — already on hand","Kirkland organic chickpeas (canned) — 4-pack","Kirkland organic black beans (canned) — 4-pack","Kirkland canned lentils OR Tasty Bite lentil microwave pouches — 90-sec shortcut","Kirkland organic hummus — tub","Tahini — Artisana or any Costco brand","Tamari or low-sodium soy sauce — Kirkland or San-J","Whole wheat flour tortillas 8-inch — Costco pack","Kirkland organic salsa — jar","Kalamata olives — jar"
+  ],
+  "Nuts, Seeds & Oils": [
+    "Kirkland organic EVOO — 2 L tin (used on nearly every meal — buy the large tin)","Kirkland walnuts — 1 lb bag","Kirkland pistachios — 1 lb bag shelled","Kirkland almonds — 1 lb bag (use in moderation — oxalate; favor walnuts and pistachios)","Ted's peanut butter — already on hand","Kirkland chia seeds — already on hand","Flaxseed meal — already on hand (keep refrigerated after opening)","Sesame seeds — small bag","Dark chocolate 85%+ — for evening anti-inflammatory snack"
+  ],
+  "Plant Milks": [
+    "Kirkland organic oat milk — 6-pack of 32 oz cartons","Kirkland unsweetened almond milk — 6-pack of 32 oz cartons"
+  ],
+  "Spices & Condiments": [
+    "Turmeric","Cinnamon","Black pepper (grinder or ground)","Garlic powder","Paprika (smoked or standard)","Ground ginger","Sea salt","Dijon mustard","Unsweetened cocoa powder"
+  ],
+  "Beverages & Protein": [
+    "Green tea bags — Kirkland or Costco brand (afternoon caffeine alternative, polyphenol source)","Sparkling water — Kirkland or Aha","Costco chocolate protein powder — continue current supply"
+  ]
+};
+
+const BM_CFG = {
+  a1c:     { label:'A1C',          unit:'%',     target:'< 5.7%',    recheck:3, good:v=>v<5.7,   warn:v=>v<6.4  },
+  vitd:    { label:'Vitamin D',    unit:'ng/mL', target:'≥ 30',      recheck:3, good:v=>v>=30,   warn:v=>v>=20  },
+  hgb:     { label:'Hemoglobin',   unit:'g/dL',  target:'14.0–17.3', recheck:6, good:v=>v>=14&&v<=17.3, warn:v=>v>=13 },
+  ldl:     { label:'LDL',          unit:'mg/dL', target:'< 100',     recheck:6, good:v=>v<100,   warn:v=>v<130  },
+  sbp:     { label:'Systolic BP',  unit:'mmHg',  target:'< 120',     recheck:6, good:v=>v<120,   warn:v=>v<130  },
+  dbp:     { label:'Diastolic BP', unit:'mmHg',  target:'< 80',      recheck:6, good:v=>v<80,    warn:v=>v<90   },
+  ferritin:{ label:'Ferritin',     unit:'ng/mL', target:'≥ 30',      recheck:6, good:v=>v>=30,   warn:v=>v>=15  }
+};
+
+const QP = ["Blueberries","Mixed berries","Frozen cherries","Frozen mango","Frozen strawberries","Oats","Broccoli","Spinach","Kale","Brussels sprouts","Bell peppers","Avocado","Banana","Apple","Sweet potato","Garlic","Onion","Lemon","Chickpeas","Lentils","Black beans","Edamame","Walnuts","Flaxseed","Chia seeds","Pumpkin seeds","Olive oil","Tomatoes","Cucumber","Arugula","Brown rice","Quinoa","Asparagus","Mushrooms","Carrots","Kimchi","Sauerkraut","Turmeric","Ginger","Cinnamon","Cumin","Paprika","Cocoa powder","Black pepper","Sesame seeds","Tahini","Kalamata olives"];
+
+const ICONS = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snacks:'🍎', custom:'✏️' };
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+const SK = 'sht3';
+function gs() { try { return JSON.parse(localStorage.getItem(SK)||'{}'); } catch { return {}; } }
+function ss(s) { localStorage.setItem(SK, JSON.stringify(s)); }
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function gtd() {
+  const s=gs(), d=today();
+  if(!s.days) s.days={};
+  if(!s.days[d]) s.days[d]={waterMl:0,prevWaterMl:0,checks:{},meals:[]};
+  return s.days[d];
+}
+function std(data) { const s=gs(),d=today(); if(!s.days)s.days={}; s.days[d]=data; ss(s); }
+
+function weekKey() {
+  const d=new Date(), day=d.getDay(), diff=d.getDate()-day+(day===0?-6:1);
+  return new Date(new Date().setDate(diff)).toISOString().split('T')[0];
+}
+
+// ── WATER ─────────────────────────────────────────────────────────────────────
+
+const W_TARGET_ML = 3000;
+
+function addWater(ml) {
+  const data=gtd();
+  data.prevWaterMl = data.waterMl || 0;
+  data.waterMl = Math.max(0, (data.waterMl||0) + ml);
+  std(data);
+  renderWater();
+}
+
+function undoWater() {
+  const data=gtd();
+  data.waterMl = data.prevWaterMl || 0;
+  std(data);
+  renderWater();
+}
+
+function renderWater() {
+  const ml=(gtd().waterMl||0);
+  const L=(ml/1000).toFixed(1);
+  const oz=Math.round(ml/29.574);
+  const targetOz=Math.round(W_TARGET_ML/29.574);
+  const pct=Math.min(100,Math.round(ml/W_TARGET_ML*100));
+
+  const wl=g('waterL'), oi=g('waterOzInline'), sub=g('waterSub'), bar=g('waterBar');
+  if(!wl) return;
+  wl.textContent=L;
+  oi.textContent=` L / ${oz} oz`;
+  sub.textContent=`of 3.0 L (${targetOz} oz) · ${pct}%`;
+  bar.style.width=pct+'%';
+  bar.className='fill'+(pct>=100?' ':pct>66?'':' ');
+
+  const undo=g('undoBtn');
+  if(undo) undo.style.display=ml>0?'':'none';
+
+  renderDashMacros();
+}
+
+// ── CHECKLIST ─────────────────────────────────────────────────────────────────
+
+function toggleCheck(k) {
+  const data=gtd(); if(!data.checks)data.checks={};
+  data.checks[k]=!data.checks[k]; std(data); renderChecks();
+}
+
+function renderChecks() {
+  const checks=(gtd().checks||{});
+  ['lemon','vyvanse','smoothie','ferm','order','remeron'].forEach(k=>{
+    const el=g('ck-'+k); if(!el) return;
+    el.classList.toggle('done',!!checks[k]);
+  });
+}
+
+// ── MEAL LOG ─────────────────────────────────────────────────────────────────
+
+function flatPlan(dayName) {
+  const day=PLAN[dayName]; if(!day) return [];
+  const out=[];
+  if(day.breakfast) out.push({label:'Breakfast',key:'breakfast',...day.breakfast});
+  if(day.lunch)     out.push({label:'Lunch',    key:'lunch',    ...day.lunch});
+  if(day.dinner)    out.push({label:'Dinner',   key:'dinner',   ...day.dinner});
+  (day.snacks||[]).forEach((s,i)=>out.push({label:`Snack ${i+1}`,key:'snacks',...s}));
+  return out;
+}
+
+function updateQMeals() {
+  const meals=flatPlan(g('qDay').value), sel=g('qMeal');
+  sel.innerHTML=meals.map((m,i)=>`<option value="${i}">${m.label}: ${m.name}</option>`).join('');
+}
+
+function quickAdd() {
+  const meals=flatPlan(g('qDay').value), m=meals[+g('qMeal').value];
+  if(!m) return;
+  pushMeal({name:m.name, type:m.key, kcal:m.kcal||0, p:m.p||0, c:m.c||0, f:m.f||0, fi:m.fi||0, sod:0, iron:!!m.iron, ox:false, ca:true});
+}
+
+function toggleCaPair() { g('caPairGrp').style.display=g('mOx').checked?'':'none'; }
+
+function logManual() {
+  const name=(g('mName').value||'').trim(); if(!name){alert('Enter a meal name.');return;}
+  const ox=g('mOx').checked, ca=g('mCa').checked;
+  pushMeal({name, type:'custom', kcal:+g('mKcal').value||0, p:+g('mProt').value||0, c:+g('mCarb').value||0, f:+g('mFat').value||0, fi:+g('mFib').value||0, sod:+g('mSod').value||0, iron:g('mIron').checked, ox, ca:ox?ca:true});
+  ['mName','mKcal','mProt','mCarb','mFat','mFib','mSod'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  g('mIron').checked=false; g('mOx').checked=false; g('mCa').checked=false; g('caPairGrp').style.display='none';
+}
+
+function pushMeal(m) {
+  const data=gtd(); data.meals=data.meals||[];
+  data.meals.push({id:Date.now(),...m}); std(data);
+  renderLog(); renderDashMacros();
+}
+
+function delMeal(id) {
+  const data=gtd(); data.meals=(data.meals||[]).filter(m=>m.id!==id); std(data);
+  renderLog(); renderDashMacros();
+}
+
+function clearLog() {
+  if(!confirm('Clear all meals for today?')) return;
+  const data=gtd(); data.meals=[]; std(data); renderLog(); renderDashMacros();
+}
+
+function totals() {
+  return (gtd().meals||[]).reduce((a,m)=>({kcal:a.kcal+(m.kcal||0),p:a.p+(m.p||0),c:a.c+(m.c||0),f:a.f+(m.f||0),fi:a.fi+(m.fi||0),sod:a.sod+(m.sod||0)}),{kcal:0,p:0,c:0,f:0,fi:0,sod:0});
+}
+
+function renderLog() {
+  const meals=gtd().meals||[], ll=g('logList'); if(!ll) return;
+  ll.innerHTML=meals.length?meals.map(m=>`
+    <div class="me">
+      <div class="me-icon">${ICONS[m.type]||'🍽️'}</div>
+      <div style="flex:1"><div class="me-name">${m.name}</div>
+        <div class="me-macros">${m.kcal} kcal · P ${m.p}g · C ${m.c}g · F ${m.f}g · Fiber ${m.fi}g${m.sod?` · Na ${m.sod}mg`:''}</div>
+      </div>
+      <button class="me-del" onclick="delMeal(${m.id})">×</button>
+    </div>`).join(''):'<div class="empty">No meals logged yet today.</div>';
+  const hasOxNoCa=(meals||[]).some(m=>m.ox&&!m.ca);
+  g('oxAlert').style.display=hasOxNoCa?'':'none';
+  renderMacroBars('logTotals', totals());
+}
+
+function renderDashMacros() { renderMacroBars('dashMacros', totals()); }
+
+function renderMacroBars(cid, t) {
+  const el=g(cid); if(!el) return;
+  const rows=[
+    {label:'Protein', val:t.p,   max:160, unit:'g'},
+    {label:'Carbs',   val:t.c,   max:280, unit:'g'},
+    {label:'Fat',     val:t.f,   max:90,  unit:'g'},
+    {label:'Fiber',   val:t.fi,  max:40,  unit:'g'},
+    {label:'Sodium',  val:t.sod, max:2000,unit:'mg'},
+  ];
+  el.innerHTML=rows.map(r=>{
+    const pct=Math.min(100,Math.round(r.val/r.max*100)), over=r.val>r.max;
+    return `<div class="mrow"><div class="mlabel">${r.label}</div><div class="mbar"><div class="track"><div class="fill${over?' over':''}" style="width:${pct}%"></div></div></div><div class="mval">${Math.round(r.val)}${r.unit}<span style="font-size:10px;opacity:.6"> / ${r.max}</span></div></div>`;
+  }).join('')+`<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:6px">${Math.round(t.kcal)} / 2,400 kcal · ${t.kcal<2400?`${Math.round(2400-t.kcal)} remaining`:'✓ target reached'}</div>`;
+}
+
+// ── PLANTS ───────────────────────────────────────────────────────────────────
+
+let _ringChart=null;
+
+function wkPlants() { const s=gs(); return (s.plants&&s.plants[weekKey()])||[]; }
+function saveWkPlants(p) { const s=gs(); if(!s.plants)s.plants={}; s.plants[weekKey()]=p; ss(s); }
+
+function addPlant() {
+  const inp=g('plantIn'), name=inp.value.trim(); if(!name) return;
+  const plants=wkPlants();
+  if(plants.map(x=>x.toLowerCase()).includes(name.toLowerCase())) { inp.value=''; return; }
+  plants.push(name); saveWkPlants(plants); inp.value=''; renderPlants();
+}
+
+function removePlant(name) { saveWkPlants(wkPlants().filter(p=>p!==name)); renderPlants(); }
+
+function toggleQP(name) {
+  const plants=wkPlants(), lower=plants.map(p=>p.toLowerCase());
+  if(lower.includes(name.toLowerCase())) removePlant(plants.find(p=>p.toLowerCase()===name.toLowerCase()));
+  else { plants.push(name); saveWkPlants(plants); renderPlants(); }
+}
+
+function renderPlants() {
+  const plants=wkPlants(), count=plants.length;
+  const cn=g('plantNum'); if(cn) cn.textContent=count;
+
+  const wl=g('weekLabel');
+  if(wl) {
+    const mon=new Date(weekKey()), sun=new Date(mon); sun.setDate(mon.getDate()+6);
+    wl.textContent=`Week of ${mon.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${sun.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  }
+
+  const canvas=g('ringCanvas');
+  if(canvas) {
+    if(_ringChart) _ringChart.destroy();
+    const pct=Math.min(count/30,1);
+    _ringChart=new Chart(canvas,{
+      type:'doughnut',
+      data:{ datasets:[{ data:[pct,1-pct], backgroundColor:[count>=30?'#52b788':'#2a9d8f','#e5e7eb'], borderWidth:0 }] },
+      options:{ cutout:'72%', plugins:{legend:{display:false},tooltip:{enabled:false}}, animation:{duration:300} }
+    });
+  }
+
+  const tags=g('plantTags');
+  if(tags) {
+    tags.innerHTML=plants.length
+      ?`<div>${plants.map(p=>`<span class="ptag">${p}<button class="ptag-x" onclick="removePlant('${p.replace(/'/g,"\\'")}')">×</button></span>`).join('')}</div>`
+      :'<div class="empty">No plants added yet this week.</div>';
+  }
+
+  const qpg=g('qpGrid');
+  if(qpg) {
+    const added=plants.map(p=>p.toLowerCase());
+    qpg.innerHTML=QP.map(p=>`<button class="qpbtn${added.includes(p.toLowerCase())?' added':''}" onclick="toggleQP('${p}')">${added.includes(p.toLowerCase())?'✓ ':''}${p}</button>`).join('');
+  }
+}
+
+// ── BIOMARKERS ───────────────────────────────────────────────────────────────
+
+const _bmCharts={};
+
+function logBM() {
+  const type=g('bmType').value, val=parseFloat(g('bmVal').value), date=g('bmDate').value;
+  if(!val||!date){alert('Enter a value and date.');return;}
+  const s=gs(); if(!s.bm)s.bm={}; if(!s.bm[type])s.bm[type]=[];
+  s.bm[type].push({date,value:val});
+  s.bm[type].sort((a,b)=>a.date.localeCompare(b.date));
+  ss(s); g('bmVal').value=''; renderBM();
+}
+
+function delBMEntry(type,i) {
+  const s=gs(); if(s.bm&&s.bm[type]){s.bm[type].splice(i,1);ss(s);renderBM();}
+}
+
+function addMo(dateStr,mo) {
+  const d=new Date(dateStr); d.setMonth(d.getMonth()+mo);
+  return d.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+}
+
+function renderBM() {
+  const s=gs(), bm=s.bm||{}, con=g('bmCards'); if(!con) return;
+  Object.values(_bmCharts).forEach(c=>{try{c.destroy();}catch{}});
+  con.innerHTML=Object.entries(BM_CFG).map(([key,cfg])=>{
+    const entries=bm[key]||[], latest=entries[entries.length-1];
+    const badge=latest?(cfg.good(latest.value)?['bg-good','✓ On Target']:cfg.warn(latest.value)?['bg-warn','⚠ Borderline']:['bg-bad','✗ Off Target']):['bg-warn','– No data'];
+    const recheck=latest?addMo(latest.date,cfg.recheck):null;
+    return `<div class="bmcard">
+      <div class="bmhdr"><div class="bmname">${cfg.label}</div><div class="badge ${badge[0]}">${badge[1]}</div></div>
+      ${latest?`<div class="bmval">${latest.value}<span class="bmunit"> ${cfg.unit}</span></div>
+        <div class="bmdate">${new Date(latest.date+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · Target: ${cfg.target}</div>`
+        :`<div class="bmdate" style="margin-top:4px">No entries yet · Target: ${cfg.target}</div>`}
+      <div class="bmchart"><canvas id="bmc-${key}" height="80"></canvas></div>
+      ${recheck?`<div class="bmrecheck">📅 Recheck by: <strong>${recheck}</strong></div>`:''}
+      ${entries.length>1?`<details style="margin-top:8px"><summary style="font-size:12px;color:var(--muted);cursor:pointer">History (${entries.length})</summary>
+        <div style="margin-top:6px">${entries.slice().reverse().map((e,i)=>`
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}: <strong>${e.value} ${cfg.unit}</strong></span>
+            <button onclick="delBMEntry('${key}',${entries.length-1-i})" style="background:none;border:none;color:var(--muted);cursor:pointer">×</button>
+          </div>`).join('')}</div></details>`:''}
+    </div>`;
+  }).join('');
+
+  Object.entries(BM_CFG).forEach(([key,cfg])=>{
+    const canvas=g('bmc-'+key); if(!canvas) return;
+    const entries=(bm[key]||[]);
+    if(entries.length<1){canvas.style.display='none';return;}
+    canvas.style.display='';
+    _bmCharts[key]=new Chart(canvas,{
+      type:'line',
+      data:{ labels:entries.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',year:'2-digit'})),
+        datasets:[{ data:entries.map(e=>e.value), borderColor:'#2a9d8f', backgroundColor:'rgba(42,157,143,.1)',
+          pointBackgroundColor:entries.map(e=>cfg.good(e.value)?'#52b788':cfg.warn(e.value)?'#e9c46a':'#e63946'),
+          pointRadius:5, tension:.3, fill:true, borderWidth:2 }] },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} ${cfg.unit}`}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f0f0'},ticks:{font:{size:10}}}} }
+    });
+  });
+}
+
+// ── MEAL PLAN TAB ────────────────────────────────────────────────────────────
+
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+let _planDay=DAYS[new Date().getDay()===0?6:new Date().getDay()-1];
+
+function renderDayTabs() {
+  const el=g('dayTabs'); if(!el) return;
+  el.innerHTML=DAYS.map(d=>`<button class="dtab${d===_planDay?' on':''}" onclick="setPlanDay('${d}')">${d.slice(0,3)}</button>`).join('');
+}
+
+function setPlanDay(d) { _planDay=d; renderDayTabs(); renderPlanCards(); }
+
+function renderPlanCards() {
+  const el=g('planCards'); if(!el) return;
+  const day=PLAN[_planDay];
+  const secs=[];
+  if(day.breakfast) secs.push({type:'Breakfast',key:'breakfast',meal:day.breakfast});
+  if(day.lunch)     secs.push({type:'Lunch',    key:'lunch',    meal:day.lunch});
+  if(day.dinner)    secs.push({type:'Dinner',   key:'dinner',   meal:day.dinner});
+  (day.snacks||[]).forEach((s,i)=>secs.push({type:`Snack ${i+1}`,key:'snacks',meal:s}));
+
+  el.innerHTML=secs.map((s,i)=>`
+    <div class="pcard" id="pc${i}">
+      <div class="ptype">${s.type}</div>
+      <div class="pname">${s.meal.name}</div>
+      <div class="ppills">
+        <span class="pill">🔥 ${s.meal.kcal} kcal</span>
+        <span class="pill">💪 P ${s.meal.p}g</span>
+        <span class="pill">🌾 C ${s.meal.c}g</span>
+        <span class="pill">🥑 F ${s.meal.f}g</span>
+        <span class="pill">🌿 Fiber ${s.meal.fi}g</span>
+        ${s.meal.iron?'<span class="pill pill-iron">🥩 Iron-rich</span>':''}
+        ${s.meal.ferm?'<span class="pill pill-ferm">🥛 Fermented</span>':''}
+      </div>
+      ${s.meal.prep?`<button class="pexpbtn" onclick="togglePC(${i})">▸ Show prep</button><div class="pprep">${s.meal.prep}</div>`:''}
+      <button class="log-btn" onclick="logFromPlan(${i})">+ Log this meal</button>
+    </div>`).join('');
+}
+
+function togglePC(i) {
+  const card=g('pc'+i), btn=card.querySelector('.pexpbtn');
+  card.classList.toggle('exp');
+  btn.textContent=card.classList.contains('exp')?'▾ Hide prep':'▸ Show prep';
+}
+
+function logFromPlan(secIdx) {
+  const day=PLAN[_planDay], secs=[];
+  if(day.breakfast) secs.push({type:'Breakfast',key:'breakfast',meal:day.breakfast});
+  if(day.lunch)     secs.push({type:'Lunch',    key:'lunch',    meal:day.lunch});
+  if(day.dinner)    secs.push({type:'Dinner',   key:'dinner',   meal:day.dinner});
+  (day.snacks||[]).forEach((s,i)=>secs.push({type:`Snack ${i+1}`,key:'snacks',meal:s}));
+  const s=secs[secIdx]; if(!s) return;
+  pushMeal({name:s.meal.name, type:s.key, kcal:s.meal.kcal||0, p:s.meal.p||0, c:s.meal.c||0, f:s.meal.f||0, fi:s.meal.fi||0, sod:0, iron:!!s.meal.iron, ox:false, ca:true});
+  go('log');
+}
+
+// ── GROCERY ──────────────────────────────────────────────────────────────────
+
+function showGrocery() {
+  const body=g('groceryBody');
+  body.innerHTML=Object.entries(GROCERY).map(([cat,items])=>`
+    <div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:800;margin-bottom:6px;color:var(--primary)">${cat}</div>
+      ${items.map(item=>`<label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)">
+        <input type="checkbox" style="margin-top:2px;flex-shrink:0;accent-color:var(--primary)">
+        <span>${item}</span></label>`).join('')}
+    </div>`).join('');
+  g('groceryModal').style.display='flex';
+}
+function closeGrocery() { g('groceryModal').style.display='none'; }
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+
+function go(tab) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  g('pane-'+tab).classList.add('on');
+  g('nb-'+tab).classList.add('on');
+  if(tab==='plants') renderPlants();
+  if(tab==='labs') renderBM();
+  if(tab==='plan') { renderDayTabs(); renderPlanCards(); }
+  if(tab==='log') renderLog();
+  if(tab==='dash') { renderDashMacros(); renderChecks(); renderWater(); }
+}
+
+function g(id) { return document.getElementById(id); }
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+
+function init() {
+  const now=new Date();
+  g('hdrDate').textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+  const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  g('qDay').value=dn[now.getDay()];
+  updateQMeals();
+
+  g('bmDate').value=today();
+
+  // Pre-populate Scott's known biomarker values if first run
+  const s=gs();
+  if(!s.bm) {
+    s.bm={
+      a1c:     [{date:'2026-05-01',value:5.7}],
+      vitd:    [{date:'2026-05-01',value:20}],
+      hgb:     [{date:'2026-05-01',value:13.8}],
+      ldl:     [{date:'2024-05-01',value:160},{date:'2026-05-01',value:102}],
+      sbp:     [{date:'2025-11-01',value:128}],
+      dbp:     [{date:'2025-11-01',value:70}],
+      ferritin:[]
+    };
+    Object.keys(s.bm).forEach(k=>s.bm[k].sort((a,b)=>a.date.localeCompare(b.date)));
+    ss(s);
+  }
+
+  renderWater(); renderChecks(); renderDashMacros();
+  renderLog(); renderBM(); renderPlants();
+  renderDayTabs(); renderPlanCards();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
