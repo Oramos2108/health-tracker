@@ -6,7 +6,11 @@
       "Bash(mkdir -p \"C:/Users/Scott/Documents/Claude/Health/.claude\")",
       "mcp__Claude_Preview__preview_start",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(gh auth *)",
+      "Bash(git remote *)",
+      "Bash(git commit *)",
+      "Bash(git pull *)"
     ]
   }
 }
